@@ -1,0 +1,38 @@
+/* src/styles/EnhanceButton.css */
+
+.enhance-btn {
+    background-color: #6366f1;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 8px 16px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .enhance-btn:hover {
+    background-color: #4f46e5;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(99, 102, 241, 0.3);
+  }
+  
+  .enhance-btn:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(99, 102, 241, 0.3);
+  }
+  
+  .enhance-btn:disabled {
+    background-color: #9ca3af;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+  }
+  
+  /* Spinner styling */
+  .enhance-btn .spinner-border {
+    width: 1rem;
+    height: 1rem;
+  }

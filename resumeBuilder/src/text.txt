@@ -1,0 +1,117 @@
+{/* Left Column: Resume Summary
+        <div className="col-md-5 col-lg-4 order-md-last">
+          <h4 className="d-flex justify-content-between align-items-center mb-3">
+            <span className="text-primary">Your Resume</span>
+            <span className="badge bg-primary rounded-pill">3</span>
+          </h4>
+          <ul className="list-group mb-3">
+            <li className="list-group-item d-flex justify-content-between lh-sm">
+              <div>
+                <h6 className="my-0">About</h6>
+                <small className="text-body-secondary">Brief description</small>
+              </div>
+              <span className="text-body-secondary">$12</span>
+            </li>
+            <li className="list-group-item d-flex justify-content-between lh-sm">
+              <div>
+                <h6 className="my-0">Education</h6>
+                <small className="text-body-secondary">Brief description</small>
+              </div>
+              <span className="text-body-secondary">$8</span>
+            </li>
+            <li className="list-group-item d-flex justify-content-between lh-sm">
+              <div>
+                <h6 className="my-0">Experience</h6>
+                <small className="text-body-secondary">Brief description</small>
+              </div>
+              <span className="text-body-secondary">$5</span>
+            </li>
+            <li className="list-group-item d-flex justify-content-between lh-sm">
+              <div>
+                <h6 className="my-0">Projects</h6>
+                <small className="text-body-secondary">Brief description</small>
+              </div>
+              <span className="text-body-secondary">$5</span>
+            </li>
+            <li className="list-group-item d-flex justify-content-between lh-sm">
+              <div>
+                <h6 className="my-0">Technical skills</h6>
+                <small className="text-body-secondary">Brief description</small>
+              </div>
+              <span className="text-body-secondary">$5</span>
+            </li>
+            <li className="list-group-item d-flex justify-content-between lh-sm">
+              <div>
+                <h6 className="my-0">Acheivements</h6>
+                <small className="text-body-secondary">Brief description</small>
+              </div>
+              <span className="text-body-secondary">$5</span>
+            </li>
+            <li className="list-group-item d-flex justify-content-between lh-sm">
+              <div>
+                <h6 className="my-0">Certifications</h6>
+                <small className="text-body-secondary">Brief description</small>
+              </div>
+              <span className="text-body-secondary">$5</span>
+            </li>
+            <li className="list-group-item d-flex justify-content-between lh-sm">
+              <div>
+                <h6 className="my-0">Extra circular Activities</h6>
+                <small className="text-body-secondary">Brief description</small>
+              </div>
+              <span className="text-body-secondary">$5</span>
+            </li>
+            <li className="list-group-item d-flex justify-content-between bg-body-tertiary">
+              <div className="text-success">
+                <h6 className="my-0">Promo code</h6>
+                <small>EXAMPLECODE</small>
+              </div>
+              <span className="text-success">−$5</span>
+            </li>
+            <li className="list-group-item d-flex justify-content-between">
+              <span>Total (USD)</span>
+              <strong>$20</strong>
+            </li>
+          </ul>
+          <form className="card p-2">
+            <div className="input-group">
+              <input type="text" className="form-control" placeholder="Promo code" />
+              <button type="submit" className="btn btn-secondary">Redeem</button>
+            </div>
+          </form>
+        </div> */}
+
+
+
+
+
+const handleSubmit = async () => {
+  e.preventDefault(); // Prevents page refresh
+  console.log("Form Data:", formData);
+  // try {
+  //   const response = await fetch('http://localhost:3000/generate-resume', {
+  //     method: 'POST',
+  //     headers: {
+  //       'Content-Type': 'application/json'
+  //     },
+  //     body: JSON.stringify(formData)
+  //   });
+    
+  //   // If the server returns a PDF as a blob:
+  //   const blob = await response.blob();
+  //   const url = window.URL.createObjectURL(blob);
+  //   const a = document.createElement('a');
+  //   a.href = url;
+  //   a.download = 'resume.pdf';
+  //   document.body.appendChild(a);
+  //   a.click();
+  //   a.remove();
+  //   window.URL.revokeObjectURL(url);
+    
+  //   // Or if it returns JSON (like LaTeX code) you can process it:
+  //   // const data = await response.json();
+  //   // console.log(data.latex);
+  // } catch (error) {
+  //   console.error('Error downloading resume:', error);
+  // }
+};

@@ -1,0 +1,36 @@
+/* src/styles/TemplateSelection.css */
+.template-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  
+  .template-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1) !important;
+  }
+  
+  .template-thumbnail-container {
+    overflow: hidden;
+    height: 400px;
+  }
+  
+  .template-thumbnail {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+  }
+  
+  .template-card:hover .template-thumbnail {
+    transform: scale(1.05);
+  }
+  
+  .card-footer .btn {
+    transition: background-color 0.3s ease;
+  }
+  
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    .template-thumbnail-container {
+      height: 300px;
+    }
+  }

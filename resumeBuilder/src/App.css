@@ -1,0 +1,153 @@
+/* src/App.css */
+
+/* General Styles */
+body {
+    background-color: #f8f9fa;
+    color: #212529;
+  }
+  
+  /* Form Styles */
+  .form-container {
+    max-width: 100%;
+  }
+  
+  .card {
+    border-radius: 0.5rem;
+    overflow: hidden;
+    transition: box-shadow 0.3s ease;
+  }
+  
+  .card:hover {
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+  }
+  
+  .card-header {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.125);
+    background-color: #f8f9fa;
+  }
+  
+  /* Preview Pane Styles */
+  .preview-pane {
+    position: sticky;
+    top: 20px;
+    max-height: calc(100vh - 40px);
+    overflow-y: auto;
+  }
+  
+  .preview-section {
+    margin-bottom: 1.5rem;
+  }
+  
+  .preview-section h5 {
+    color: #495057;
+    font-weight: 600;
+  }
+  
+  /* Project Card Styles */
+  .project-card {
+    background-color: #f9f9f9;
+    transition: all 0.3s ease;
+  }
+  
+  .project-card:hover {
+    background-color: #f5f5f5;
+  }
+  
+  /* Form Field Spacing */
+  .form-label {
+    font-weight: 500;
+    margin-bottom: 0.25rem;
+  }
+  
+  /* Custom Button Styling */
+  .btn-primary {
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+  }
+  
+  .btn-primary:hover {
+    background-color: #0b5ed7;
+    border-color: #0a58ca;
+  }
+  
+  /* Sticky preview for smaller screens */
+  @media (max-width: 767.98px) {
+    .preview-pane {
+      position: static;
+      margin-top: 2rem;
+    }
+  }
+  
+  /* Add some style to section dividers */
+  h4, h5, h6 {
+    color: #343a40;
+  }
+  
+  /* Style for the select dropdown from react-select */
+  .select__control {
+    border-color: #ced4da !important;
+    box-shadow: none !important;
+  }
+  
+  .select__control:hover {
+    border-color: #adb5bd !important;
+  }
+  
+  .select__control--is-focused {
+    border-color: #86b7fe !important;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25) !important;
+  }
+  
+  .select__multi-value {
+    background-color: #e9ecef !important;
+  }
+  
+  .select__multi-value__label {
+    color: #212529 !important;
+  }
+  
+  /* Enhance form spacing */
+  .row {
+    margin-bottom: 0.5rem;
+  }
+  
+  /* Custom file upload button styling */
+  .custom-file-upload {
+    border: 1px solid #ced4da;
+    display: inline-block;
+    padding: 6px 12px;
+    cursor: pointer;
+    background-color: #f8f9fa;
+    border-radius: 0.25rem;
+    transition: all 0.2s ease;
+  }
+  
+  .custom-file-upload:hover {
+    background-color: #e9ecef;
+  }
+  
+  /* Add some spacing to the preview content */
+  .card-body {
+    padding: 1.5rem;
+  }
+
+  /* Ensure proper spacing for anchor links */
+html {
+    scroll-padding-top: 140px; /* 60(main) + 50(resume) + 30(buffer) */
+  }
+  
+  @media (max-width: 991.98px) {
+    html {
+      scroll-padding-top: 120px; /* 56 + 45 + 19 */
+    }
+  }
+
+  @media (max-width: 991.98px) {
+    .resume-nav-header {
+      top: 56px; /* Mobile header height */
+    }
+    
+    .sticky-top {
+      top: 106px !important; /* 56 + 50 */
+    }
+  }

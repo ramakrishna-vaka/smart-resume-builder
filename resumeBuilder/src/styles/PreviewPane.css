@@ -1,0 +1,113 @@
+/* src/styles/PreviewPane.css */
+:root {
+    --page-width-px: 340px;
+    --page-height-px: 364px;
+    --resume-margin: 36px;
+    --preview-width: 540px;
+    --preview-height: 464px;
+    --scale-width: calc(var(--preview-width) / var(--page-width-px));
+    --scale-height: calc(var(--preview-height) / var(--page-height-px));
+    --preview-scale: min(var(--scale-width), var(--scale-height));
+  
+    --card-padding: 20px;
+    --card-radius: 8px;
+    --card-bg: #fff;
+    --card-shadow: 0 4px 16px rgba(0,0,0,0.1);
+  }
+  
+  .preview-container {
+    width: var(--preview-width);
+    height: var(--preview-height);
+    padding: var(--card-padding);
+    background: var(--card-bg);
+    border-radius: var(--card-radius);
+    box-shadow: var(--card-shadow);
+    overflow: auto;       /* scroll vertically for all content */
+  }
+  
+  .preview-pane {
+    width: var(--page-width-px);
+    min-height: var(--page-height-px);
+    padding: var(--resume-margin);
+    background: #fafafa;
+    box-shadow: 0 0 6px rgba(0,0,0,0.05);
+    transform: scale(var(--preview-scale));
+    transform-origin: top left;
+  }
+  
+  /* Header */
+  .preview-header {
+    text-align: center;
+    margin-bottom: 4pt;
+  }
+  .resume-name {
+    font-variant: small-caps;
+    font-size: 7pt;
+    color: #2b2b2b;
+    margin: 0;
+  }
+  .contact-info {
+    font-size: 3.5pt;
+    color: #666;
+  }
+  
+  /* Section headings */
+  .resume-section {
+    margin-bottom: 4pt;
+  }
+  .section-heading {
+    font-variant: small-caps;
+    font-size: 10px !important;       
+    line-height: 1 !important;        /* no extra leading */
+    margin: 1px 0 !important;         /* almost no spacing around */
+    padding-bottom: 1px !important;   /* minimal underline gap */
+    border-bottom: 1px solid #ddd !important;
+    letter-spacing: 0.3px !important; /* slight tracking for sc */
+  }
+  
+  /* Education */
+  .education-item {
+    margin-bottom: 3pt;
+  }
+  .item-title {
+    font-size: 4.5pt;
+    font-weight: 600;
+    color: #222;
+    margin: 0 0 1pt;
+  }
+  .edu-line {
+    display: flex;
+    justify-content: space-between;
+    font-size: 3.5pt;
+    margin-bottom: 1pt;
+  }
+  .period-text {
+    color: #555;
+  }
+  
+  /* Skills */
+  .skills-content {
+    font-size: 3pt;
+    line-height: 1.2;
+  }
+  
+  /* Experience & Projects */
+  .experience-item,
+  .project-item {
+    margin-bottom: 3pt;
+  }
+  .tech-stack {
+    font-size: 3pt;
+    font-style: italic;
+  }
+  .description-text {
+    font-size: 3pt;
+    line-height: 1.1;
+    margin-top: 2pt;
+  }
+  .list-item {
+    padding-left: 6px;
+    text-indent: -6px;
+    margin-bottom: 1px;
+  }
+  

@@ -1,0 +1,34 @@
+.resume-nav-header {
+  position: sticky;
+  top: 60px; /* Match main header height */
+  z-index: 1020; /* Below main header's z-index */
+  height: 50px;
+  background: #ffffff;
+  border-bottom: 1px solid #e9ecef;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+/* Add responsive adjustments */
+@media (max-width: 991.98px) {
+  .resume-nav-header {
+    top: 56px; /* Adjusted for mobile header height */
+    height: 45px;
+  }
+}
+.resume-sections {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 8px;
+  padding: 0 10px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Hide scrollbar but keep functionality */
+.resume-sections::-webkit-scrollbar {
+  display: none;
+}
+
+.nav-section-btn {
+  flex-shrink: 0; /* Prevent button shrinking */
+}
