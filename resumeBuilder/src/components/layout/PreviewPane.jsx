@@ -5,13 +5,22 @@ import '../../styles/PreviewPane.css';
 const PreviewPane = ({ formData }) => {
   const renderSkills = skills =>
     skills?.map(s => s.label).join(', ');
-  const renderList = text =>
-    text?.split('\n')
+    
+  const renderList = text => {
+    // Handle case when text is not a string (might be an array or other type)
+    if (!text) return null;
+    
+    // Convert to string if it's not already
+    const textString = typeof text === 'string' ? text : String(text);
+    
+    return textString
+      .split('\n')
       .map(t => t.trim())
       .filter(Boolean)
       .map((item, i) => (
         <div key={i} className="list-item">• {item}</div>
       ));
+  };
 
   return (
     <div className="preview-container">
@@ -85,21 +94,29 @@ const PreviewPane = ({ formData }) => {
         )}
 
         {/* Experience */}
-        {formData.isThereExperience && formData.experienceCompany && (
+        {formData.hasExperience && formData.experiences?.length > 0 && (
           <div className="resume-section">
             <h2 className="section-heading">Experience</h2>
-            <div className="experience-item">
-              <h3 className="item-title">
-                {formData.experienceRole} — {formData.experienceCompany}
-              </h3>
-              <div className="edu-line">
-                <span className="tech-stack">{formData.experienceTechStack}</span>
-                <span className="period-text">{formData.experiencePeriod}</span>
+            {formData.experiences.map((exp, index) => (
+              <div key={index} className="experience-item">
+                <h3 className="item-title">
+                  {exp.role} — {exp.company}
+                </h3>
+                <div className="edu-line">
+                  <span className="tech-stack">{exp.techStack}</span>
+                  <span className="period-text">{exp.period}</span>
+                </div>
+                {exp.location && (
+                  <div className="edu-line">
+                    <span className="location-text">{exp.location}</span>
+                    <span />
+                  </div>
+                )}
+                <div className="description-text">
+                  {renderList(exp.description)}
+                </div>
               </div>
-              <div className="description-text">
-                {renderList(formData.experienceDescription)}
-              </div>
-            </div>
+            ))}
           </div>
         )}
 
@@ -126,27 +143,66 @@ const PreviewPane = ({ formData }) => {
           </div>
         )}
 
-        {/* Achievements */}
-        {formData.achievements && (
-          <div className="resume-section">
-            <h2 className="section-heading">Achievements</h2>
-            <div className="description-text">{renderList(formData.achievements)}</div>
-          </div>
-        )}
-
-        {/* Certifications */}
-        {formData.certifications && (
+        {/* Certifications - UPDATED */}
+        {formData.certifications && formData.certifications.length > 0 && (
           <div className="resume-section">
             <h2 className="section-heading">Certifications</h2>
-            <div className="description-text">{renderList(formData.certifications)}</div>
+            {formData.certifications.map((cert, index) => (
+              <div key={index} className="certification-item">
+                <h3 className="item-title">{cert.name}</h3>
+                <div className="edu-line">
+                  <span className="organization-text">{cert.issuer}</span>
+                  <span className="period-text">{cert.date}</span>
+                </div>
+                {cert.description && (
+                  <div className="description-text">
+                    {renderList(cert.description)}
+                  </div>
+                )}
+              </div>
+            ))}
           </div>
         )}
 
-        {/* Extra‑Curricular */}
-        {formData.extraCircularActivities && (
+        {/* Achievements - UPDATED */}
+        {formData.achievements && formData.achievements.length > 0 && (
           <div className="resume-section">
-            <h2 className="section-heading">Extra Curricular Activities</h2>
-            <div className="description-text">{renderList(formData.extraCircularActivities)}</div>
+            <h2 className="section-heading">Achievements</h2>
+            {formData.achievements.map((achievement, index) => (
+              <div key={index} className="achievement-item">
+                <h3 className="item-title">{achievement.title}</h3>
+                <div className="edu-line">
+                  <span className="organization-text">{achievement.organization}</span>
+                  <span className="period-text">{achievement.year}</span>
+                </div>
+                {achievement.description && (
+                  <div className="description-text">
+                    {renderList(achievement.description)}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Extracurricular Activities - UPDATED */}
+        {formData.extracurricularActivities && formData.extracurricularActivities.length > 0 && (
+          <div className="resume-section">
+            <h2 className="section-heading">Extracurricular Activities</h2>
+            {formData.extracurricularActivities.map((activity, index) => (
+              <div key={index} className="activity-item">
+                <h3 className="item-title">{activity.name} {activity.role && `- ${activity.role}`}</h3>
+                <div className="edu-line">
+                  <span className="organization-text">{activity.organization}</span>
+                  <span className="period-text">{activity.period}</span>
+                </div>
+                {activity.description && (
+                  <div className="description-text">
+                    {renderList(activity.description)}
+                  </div>
+                )}
+              </div>
+            ))}
           </div>
         )}
       </div>

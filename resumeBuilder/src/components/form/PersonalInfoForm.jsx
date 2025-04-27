@@ -34,7 +34,7 @@ const PersonalInfoForm = ({ formData, handleChange }) => {
           type="email"
           className="form-control"
           id="email"
-          placeholder="you@example.com"
+          placeholder=""
           value={formData.email}
           onChange={handleChange}
           required
@@ -63,7 +63,7 @@ const PersonalInfoForm = ({ formData, handleChange }) => {
             type="url"
             className="form-control"
             id="linkedinUrl"
-            placeholder="https://linkedin.com/in/yourusername"
+            placeholder=""
             value={formData.linkedinUrl}
             onChange={handleChange}
           />
@@ -80,7 +80,7 @@ const PersonalInfoForm = ({ formData, handleChange }) => {
             type="url"
             className="form-control"
             id="githubUrl"
-            placeholder="https://github.com/yourusername"
+            placeholder=""
             value={formData.githubUrl}
             onChange={handleChange}
           />
@@ -88,7 +88,7 @@ const PersonalInfoForm = ({ formData, handleChange }) => {
       </div>
       
       <div className="col-12">
-        <label htmlFor="leetcodeUrl" className="form-label">LeetCode Profile URL</label>
+        <label htmlFor="leetcodeUrl" className="form-label">Coding Profile URL</label>
         <div className="input-group">
           <span className="input-group-text">
             <i className="fas fa-code"></i>
@@ -97,12 +97,11 @@ const PersonalInfoForm = ({ formData, handleChange }) => {
             type="url"
             className="form-control"
             id="leetcodeUrl"
-            placeholder="https://leetcode.com/yourusername"
+            placeholder="Tip:Add your LeetCode profile URL"
             value={formData.leetcodeUrl}
             onChange={handleChange}
           />
         </div>
-        <div className="form-text">Optional: Include your LeetCode profile URL if applicable</div>
       </div>
     </div>
   );

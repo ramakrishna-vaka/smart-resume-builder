@@ -8,8 +8,17 @@ import StatusIndicators from '../ui/StatusIndicators';
 import { initialFormState } from '../../utils/formInitialState';
 import '../../styles/ResumeNavHeader.css';
 import '../../styles/ResumeBuilder.css';
+import { initStickyPreviewHandler } from '../../utils/stickyPreviewHandler';
+import { formatFormDataForApi } from '../../utils/dataFormatter';
 
 const ResumeBuilder = () => {
+
+  useEffect(() => {
+    // Initialize sticky preview handler
+    const cleanup = initStickyPreviewHandler();
+    return cleanup;
+  }, []);
+
   const [formData, setFormData] = useState(initialFormState);
   const [isDirty, setIsDirty] = useState({});
   const [isLoading, setIsLoading] = useState(false);
@@ -53,14 +62,15 @@ const ResumeBuilder = () => {
       const scrollPosition = window.scrollY + totalHeaderHeight + 10;
   
       let currentSection = resumeSections[0].id;
-      sections.forEach(section => {
+      for (const section of sections) {
         const sectionTop = section.offsetTop;
         const sectionBottom = sectionTop + section.offsetHeight;
         
         if (scrollPosition >= sectionTop && scrollPosition < sectionBottom) {
           currentSection = section.dataset.sectionId;
+          break;
         }
-      });
+      }
   
       setActiveSectionId(currentSection);
     };
@@ -89,24 +99,25 @@ const ResumeBuilder = () => {
       }));
 
       // Clear any status messages when the user makes changes
-    // This prevents showing outdated success/error messages
-    setSuccessMessage('');
-    setErrorMessage('');
+      setSuccessMessage('');
+      setErrorMessage('');
     }
   };
 
   const handleEnhance = async () => {
     setIsEnhancing(true);
+    setSuccessMessage('');
+    setErrorMessage('');
     try {
       // Format data to match server expectations
       const formattedData = {
         ...formData,
         skills: formData.skills.map((skill) => typeof skill === 'object' ? skill.value : skill),
       };
-      
-      // Skip enhancement if no job description is provided
-      if (!formattedData.jobDescription) {
+      const jobDescription = sessionStorage.getItem('jobDescription') || '';
+      if (!jobDescription) {
         setErrorMessage('Please provide a job description for enhancement');
+        setIsEnhancing(false);
         return;
       }
       
@@ -115,7 +126,7 @@ const ResumeBuilder = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ formData: formattedData }),
+        body: JSON.stringify({ formData: formattedData, jobDescription }),
       });
       
       if (enhancementResponse.ok) {
@@ -124,9 +135,6 @@ const ResumeBuilder = () => {
         
         // Start with our current form data
         const mergedData = { ...formData };
-        
-        // CORRECTED LOGIC: Update fields ONLY IF they are dirty (user changed them)
-        // or they haven't been enhanced before
         
         // Skills - enhance if dirty or not previously enhanced
         if (isDirty.skills && Array.isArray(enhancedData.enhancedSkills)) {
@@ -137,8 +145,6 @@ const ResumeBuilder = () => {
         
         // Projects - needs more comprehensive handling
         if (isDirty.projects && Array.isArray(enhancedData.enhancedProjects)) {
-          // Convert enhanced projects to match form data structure
-          // This depends on your exact projects structure
           mergedData.projects = enhancedData.enhancedProjects.map(project => ({
             projectName: project.name || "",
             projectTechStack: project.techStack || "",
@@ -147,33 +153,51 @@ const ResumeBuilder = () => {
         }
         
         // Experience - enhance individual fields if they are dirty
-        if (enhancedData.enhancedExperience && formData.isThereExperience) {
-          const exp = enhancedData.enhancedExperience;
+        if (isDirty.experiences && Array.isArray(enhancedData.enhancedExperiences)) {
+          const enhancedExperiencesFormatted = enhancedData.enhancedExperiences.map(exp => ({
+            company: exp.company || '',
+            role: exp.role || '',
+            period: exp.period || '',
+            techStack: exp.techStack || '',
+            description: exp.bullets ? '• ' + exp.bullets.join('\n• ') : ''
+          }));
           
-          // Only update fields that the user modified (are dirty)
-          if (isDirty.experienceRole) mergedData.experienceRole = exp.role || mergedData.experienceRole;
-          if (isDirty.experienceCompany) mergedData.experienceCompany = exp.company || mergedData.experienceCompany;
-          if (isDirty.experiencePeriod) mergedData.experiencePeriod = exp.period || mergedData.experiencePeriod;
-          if (isDirty.experienceTechStack) mergedData.experienceTechStack = exp.techStack || mergedData.experienceTechStack;
-          
-          // Format experience description with bullets
-          if (isDirty.experienceDescription && exp.bullets) {
-            mergedData.experienceDescription = exp.bullets.join('\n• ');
-            if (mergedData.experienceDescription) {
-              mergedData.experienceDescription = '• ' + mergedData.experienceDescription;
-            }
+          if (enhancedExperiencesFormatted.length > 0) {
+            mergedData.experiences = enhancedExperiencesFormatted;
           }
         }
         
-        // Achievements - enhance if dirty
-        if (isDirty.achievements && enhancedData.enhancedAchievements) {
-          mergedData.achievements = enhancedData.enhancedAchievements;
-        }
-        
         // Certifications - enhance if dirty
-        if (isDirty.certifications && enhancedData.enhancedCertifications) {
-          mergedData.certifications = enhancedData.enhancedCertifications;
-        }
+if (isDirty.certifications && Array.isArray(enhancedData.enhancedCertifications)) {
+  mergedData.certifications = enhancedData.enhancedCertifications.map(cert => ({
+    name: cert.name || '',
+    issuer: cert.issuer || '',
+    date: cert.date || '',
+    link: cert.link || '',
+    description: cert.description || ''
+  }));
+}
+
+// Achievements - enhance if dirty
+if (isDirty.achievements && Array.isArray(enhancedData.enhancedAchievements)) {
+  mergedData.achievements = enhancedData.enhancedAchievements.map(achievement => ({
+    title: achievement.title || '',
+    year: achievement.year || '',
+    organization: achievement.organization || '',
+    description: achievement.description || ''
+  }));
+}
+
+// Extracurricular Activities - enhance if dirty
+if (isDirty.extracurricularActivities && Array.isArray(enhancedData.enhancedActivities)) {
+  mergedData.extracurricularActivities = enhancedData.enhancedActivities.map(activity => ({
+    name: activity.name || '',
+    role: activity.role || '',
+    organization: activity.organization || '',
+    period: activity.period || '',
+    description: activity.description || ''
+  }));
+}
         
         // Update form data with source='server' to avoid marking these changes as dirty
         handleFormDataChange(mergedData, 'server');
@@ -193,6 +217,8 @@ const ResumeBuilder = () => {
   const loadPreviousData = async () => {
     try {
       // Get the authenticated user's resume data
+      setSuccessMessage('');
+    setErrorMessage('');
       const response = await fetch('http://localhost:3000/api/resume-data/fetch', {
         method: 'GET',
         headers: {
@@ -237,17 +263,21 @@ const ResumeBuilder = () => {
     e.preventDefault();
     setIsLoading(true);
     
+    // Clear any previous success/error messages when submitting
+    setSuccessMessage('');
+    setErrorMessage('');
     try {
       // Validate required fields
       if (!formData.firstName || !formData.lastName) {
         throw new Error("First name and last name are required");
       }
       
+      const jobDescription = sessionStorage.getItem('jobDescription') || '';
       // Format data to match server expectations - do this once for all operations
-      const formattedData = {
+      const formattedData = formatFormDataForApi({
         ...formData,
-        skills: formData.skills.map((skill) => typeof skill === 'object' ? skill.value : skill) // More robust conversion
-      };
+        jobDescription // Include job description from session storage
+      });
       
       // Step 1: Save data to MongoDB if requested by the user
       if (saveDataForFuture) {
@@ -340,7 +370,7 @@ const ResumeBuilder = () => {
       <div className="container mt-4">
         <div className="row">
           {/* Main Form Content */}
-          <div className="form-col col-md-7" ref={formContainerRef}>
+          <div className="form-col col-md-8" ref={formContainerRef}>
             <div className="form-container">
               <div className="d-flex justify-content-between align-items-center mb-3">
                 <h2>Resume Details</h2>
@@ -386,11 +416,8 @@ const ResumeBuilder = () => {
           </div>
           
           {/* Preview Section - Right Column */}
-          <div className="preview-col col-md-5">
-            <div className="sticky-top preview-container" style={{ 
-              top: '110px',
-              zIndex: 1020
-            }}>
+          <div className="preview-col col-md-4">
+            <div className="preview-container">
               <h2>Resume Preview</h2>
               <PreviewPane formData={formData} />
             </div>

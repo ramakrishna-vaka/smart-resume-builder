@@ -1,19 +1,24 @@
-// src/pages/JobDescriptionPage.jsx
-import React, { useState } from 'react';
+// Improved JobDescriptionPage.jsx with session storage
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../styles/JobDescriptionPage.css';
 
 const JobDescriptionPage = () => {
-  const [jobDescription, setJobDescription] = useState('');
+  // Initialize state from sessionStorage if available
+  const [jobDescription, setJobDescription] = useState(() => {
+    return sessionStorage.getItem('jobDescription') || '';
+  });
   const navigate = useNavigate();
 
+  // Save to sessionStorage whenever jobDescription changes
+  useEffect(() => {
+    sessionStorage.setItem('jobDescription', jobDescription);
+  }, [jobDescription]);
+
   const handleSubmit = () => {
-    if (jobDescription.trim()) {
-      // Store job description in localStorage or state management
-      localStorage.setItem('jobDescription', jobDescription);
-    }
-    // Proceed to next page (likely information input)
-    navigate('/generate-resume/templateId'); // Replace 'templateId' with actual template ID
+    // We don't need to explicitly save here since we're using useEffect
+    // Navigate to next page
+    navigate('/generate-resume/templateId');
   };
 
   return (

@@ -1,5 +1,6 @@
 // src/components/form/ProjectsForm.jsx
 import React from 'react';
+import '../../styles/ProjectsForm.css'; 
 
 const ProjectsForm = ({ projects, handleProjectChange, removeProject }) => {
   // Function to adjust textarea height dynamically
@@ -35,45 +36,46 @@ const ProjectsForm = ({ projects, handleProjectChange, removeProject }) => {
                 type="text"
                 className="form-control"
                 id={`projectName${index}`}
-                placeholder="e.g., E-commerce Website"
+                placeholder=""
                 value={project.projectName}
                 onChange={(e) => handleProjectChange(index, 'projectName', e.target.value)}
                 required
               />
             </div>
-            
+
             <div className="col-md-6">
-              <label htmlFor={`projectTechStack${index}`} className="form-label">Technologies Used</label>
-              <input
-                type="text"
-                className="form-control"
-                id={`projectTechStack${index}`}
-                placeholder="e.g., React, Django, PostgreSQL"
-                value={project.projectTechStack}
-                onChange={(e) => handleProjectChange(index, 'projectTechStack', e.target.value)}
-                required
-              />
-            </div>
-            
-            <div className="col-md-6">
-              <label htmlFor={`projectLink${index}`} className="form-label">Live Demo URL</label>
+              <label htmlFor={`projectLink${index}`} className="form-label">Deployment Link</label>
               <div className="input-group">
                 <span className="input-group-text">
                   <i className="fas fa-external-link-alt"></i>
                 </span>
                 <input
                   type="url"
-                  className="form-control"
+                  className="form-control small-placeholder"
                   id={`projectLink${index}`}
-                  placeholder="https://myproject.example.com"
+                  placeholder="Tip: Add your GitHub Link if you haven't deployed it"
                   value={project.projectLink || ''}
                   onChange={(e) => handleProjectChange(index, 'projectLink', e.target.value)}
                 />
               </div>
-              <div className="form-text">Optional: URL to the live project</div>
             </div>
             
-            <div className="col-md-6">
+            <div className="w-100 px-3">
+              <label htmlFor={`projectTechStack${index}`} className="form-label">Technologies Used</label>
+              <input
+                type="text"
+                className="form-control"
+                id={`projectTechStack${index}`}
+                placeholder=""
+                value={project.projectTechStack}
+                onChange={(e) => handleProjectChange(index, 'projectTechStack', e.target.value)}
+                required
+              />
+            </div>
+
+            
+            
+            {/* <div className="col-md-6">
               <label htmlFor={`githubLink${index}`} className="form-label">GitHub Repository URL</label>
               <div className="input-group">
                 <span className="input-group-text">
@@ -83,20 +85,20 @@ const ProjectsForm = ({ projects, handleProjectChange, removeProject }) => {
                   type="url"
                   className="form-control"
                   id={`githubLink${index}`}
-                  placeholder="https://github.com/yourusername/project"
+                  placeholder=""
                   value={project.githubLink || ''}
                   onChange={(e) => handleProjectChange(index, 'githubLink', e.target.value)}
                 />
               </div>
-              <div className="form-text">Optional: URL to the GitHub repository</div>
-            </div>
+              <div className="form-text"></div>
+            </div> */}
             
             <div className="col-12">
               <label htmlFor={`projectDescription${index}`} className="form-label">Description</label>
               <textarea
                 className="form-control auto-resize"
                 id={`projectDescription${index}`}
-                placeholder="Describe the project, your role, and key achievements"
+                placeholder=""
                 value={project.projectDescription}
                 onChange={(e) => {
                   handleProjectChange(index, 'projectDescription', e.target.value);

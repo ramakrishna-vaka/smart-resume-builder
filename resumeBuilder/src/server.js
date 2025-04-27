@@ -187,24 +187,32 @@ Expected format:
   }
 });
 
+// Replace the entire enhance/experience endpoint with this:
+
 app.post('/enhance/experience', clerkMiddleware(), async (req, res) => {
   try {
     const { experienceData, jobDescription } = req.body;
-    
-    if (!jobDescription || !experienceData || !experienceData.experienceRole) {
-      return res.json({ enhancedExperience: null }); // Return null if no valid input
+
+    if (!jobDescription || !experienceData || !Array.isArray(experienceData.experiences)) {
+      return res.json({ enhancedExperiences: [] }); // Return empty array if no valid input
     }
     
-    const prompt = `
+    // Process each experience individually
+    const enhancementPromises = experienceData.experiences.map(async (experience) => {
+      if (!experience.role) {
+        return null; // Skip empty experiences
+      }
+      
+      const prompt = `
 Job Description:
 ${jobDescription}
 
 Candidate's Experience:
-Role: ${experienceData.experienceRole || ''}
-Company: ${experienceData.experienceCompany || ''}
-Period: ${experienceData.experiencePeriod || ''}
-Tech Stack: ${experienceData.experienceTechStack || ''}
-Description: ${experienceData.experienceDescription || ''}
+Role: ${experience.role || ''}
+Company: ${experience.company || ''}
+Period: ${experience.period || ''}
+Tech Stack: ${experience.techStack || ''}
+Description: ${experience.description || ''}
 
 Based on this job description, enhance the experience to better align with the job requirements:
 1. Keep the original role, company, and period
@@ -229,70 +237,31 @@ Expected format:
 }
 `;
 
-    const aiResponse = await callAI(prompt, true);
+      const aiResponse = await callAI(prompt, true);
+      
+      if (!aiResponse) {
+        return experience; // Return original on error
+      }
+      
+      try {
+        // Parse JSON response
+        const cleanedResponse = cleanJsonResponse(aiResponse);
+        return JSON.parse(cleanedResponse);
+      } catch (jsonError) {
+        console.error('Error parsing AI response:', jsonError);
+        return experience; // Return original on error
+      }
+    });
     
-    if (!aiResponse) {
-      return res.json({ enhancedExperience: null });
-    }
+    // Wait for all enhancements to complete
+    const enhancedExperiences = await Promise.all(enhancementPromises);
     
-    try {
-      // Parse JSON response
-      const cleanedResponse = cleanJsonResponse(aiResponse);
-      const enhancedExperience = JSON.parse(cleanedResponse);
-      res.json({ enhancedExperience });
-    } catch (jsonError) {
-      console.error('Error parsing AI response:', jsonError);
-      res.json({ enhancedExperience: null }); // Return null on error
-    }
+    res.json({ 
+      enhancedExperiences: enhancedExperiences.filter(exp => exp !== null)
+    });
     
   } catch (error) {
     console.error('Error enhancing experience:', error);
-    res.status(500).json({ error: error.message });
-  }
-});
-
-app.post('/enhance/achievements', clerkMiddleware(), async (req, res) => {
-  try {
-    const { achievements, jobDescription } = req.body;
-    
-    if (!jobDescription || !achievements) {
-      return res.json({ enhancedAchievements: achievements }); // Return original
-    }
-    
-    const prompt = `
-Job Description:
-${jobDescription}
-
-Candidate's Achievements:
-${achievements}
-
-Based on this job description, enhance the achievements to better align with the job requirements:
-1. Prioritize achievements most relevant to the job
-2. Quantify achievements where possible
-3. Focus on results and impact
-4. Format the achievements as 2-3 concise, impactful bullet points
-5. Return just the enhanced achievements as plain text bullet points separated by newlines
-
-Format: "• Achievement 1\n• Achievement 2\n• Achievement 3"
-`;
-
-    const aiResponse = await callAI(prompt);
-    
-    if (!aiResponse) {
-      return res.json({ enhancedAchievements: achievements });
-    }
-    
-    // Clean up format - remove bullet points if they exist and join with newlines
-    const enhancedAchievements = aiResponse
-      .split('\n')
-      .map(line => line.trim().replace(/^[•\-*]\s*/, ''))
-      .filter(line => line.length > 0)
-      .join('\n• ');
-    
-    res.json({ enhancedAchievements: `• ${enhancedAchievements}` });
-    
-  } catch (error) {
-    console.error('Error enhancing achievements:', error);
     res.status(500).json({ error: error.message });
   }
 });
@@ -301,7 +270,7 @@ app.post('/enhance/certifications', clerkMiddleware(), async (req, res) => {
   try {
     const { certifications, jobDescription } = req.body;
     
-    if (!jobDescription || !certifications) {
+    if (!jobDescription || !Array.isArray(certifications) || certifications.length === 0) {
       return res.json({ enhancedCertifications: certifications }); // Return original
     }
     
@@ -310,31 +279,54 @@ Job Description:
 ${jobDescription}
 
 Candidate's Certifications:
-${certifications}
+${certifications.map((cert, i) => `
+Certification ${i+1}: ${cert.name || ''}
+Issuer: ${cert.issuer || ''}
+Date: ${cert.date || ''}
+Description: ${cert.description || ''}
+`).join('\n')}
 
 Based on this job description, enhance the certifications to better align with the job requirements:
-1. Prioritize certifications most relevant to the job
-2. Format the certifications in a professional way
-3. Add brief details about the relevance of each certification if appropriate
-4. Return just the enhanced certifications as plain text bullet points separated by newlines
+1. Keep the original certification names, issuers, and dates
+2. Add or enhance descriptions to highlight relevance to the job 
+3. Prioritize the certifications most relevant to the position
+4. Return the results in a structured JSON format
 
-Format: "• Certification 1\n• Certification 2\n• Certification 3"
+Expected format:
+[
+  {
+    "name": "Original Certificate Name",
+    "issuer": "Original Issuer",
+    "date": "Original Date",
+    "link": "Original Link",
+    "description": "Enhanced description explaining relevance to the job",
+    "relevanceScore": 85
+  },
+  ...
+]
 `;
 
-    const aiResponse = await callAI(prompt);
+    const aiResponse = await callAI(prompt, true);
     
     if (!aiResponse) {
       return res.json({ enhancedCertifications: certifications });
     }
     
-    // Clean up format - remove bullet points if they exist and join with newlines
-    const enhancedCertifications = aiResponse
-      .split('\n')
-      .map(line => line.trim().replace(/^[•\-*]\s*/, ''))
-      .filter(line => line.length > 0)
-      .join('\n• ');
-    
-    res.json({ enhancedCertifications: `• ${enhancedCertifications}` });
+    try {
+      // Parse JSON response
+      const cleanedResponse = cleanJsonResponse(aiResponse);
+      const enhancedCertifications = JSON.parse(cleanedResponse);
+      
+      // Sort by relevance score if available
+      if (enhancedCertifications.some(c => c.relevanceScore)) {
+        enhancedCertifications.sort((a, b) => (b.relevanceScore || 0) - (a.relevanceScore || 0));
+      }
+      
+      res.json({ enhancedCertifications });
+    } catch (jsonError) {
+      console.error('Error parsing AI response:', jsonError);
+      res.json({ enhancedCertifications: certifications }); // Return original on error
+    }
     
   } catch (error) {
     console.error('Error enhancing certifications:', error);
@@ -342,12 +334,148 @@ Format: "• Certification 1\n• Certification 2\n• Certification 3"
   }
 });
 
+app.post('/enhance/achievements', clerkMiddleware(), async (req, res) => {
+  try {
+    const { achievements, jobDescription } = req.body;
+    
+    if (!jobDescription || !Array.isArray(achievements) || achievements.length === 0) {
+      return res.json({ enhancedAchievements: achievements }); // Return original
+    }
+    
+    const prompt = `
+Job Description:
+${jobDescription}
+
+Candidate's Achievements:
+${achievements.map((ach, i) => `
+Achievement ${i+1}: ${ach.title || ''}
+Organization: ${ach.organization || ''}
+Year: ${ach.year || ''}
+Description: ${ach.description || ''}
+`).join('\n')}
+
+Based on this job description, enhance the achievements to better align with the job requirements:
+1. Keep the original achievement titles, organizations, and years
+2. Enhance descriptions to quantify results and highlight relevance
+3. Prioritize achievements most relevant to the position
+4. Return the results in a structured JSON format
+
+Expected format:
+[
+  {
+    "title": "Original Achievement Title",
+    "organization": "Original Organization",
+    "year": "Original Year",
+    "description": "Enhanced description with metrics and relevance to job",
+    "relevanceScore": 90
+  },
+  ...
+]
+`;
+
+    const aiResponse = await callAI(prompt, true);
+    
+    if (!aiResponse) {
+      return res.json({ enhancedAchievements: achievements });
+    }
+    
+    try {
+      // Parse JSON response
+      const cleanedResponse = cleanJsonResponse(aiResponse);
+      const enhancedAchievements = JSON.parse(cleanedResponse);
+      
+      // Sort by relevance score if available
+      if (enhancedAchievements.some(a => a.relevanceScore)) {
+        enhancedAchievements.sort((a, b) => (b.relevanceScore || 0) - (a.relevanceScore || 0));
+      }
+      
+      res.json({ enhancedAchievements });
+    } catch (jsonError) {
+      console.error('Error parsing AI response:', jsonError);
+      res.json({ enhancedAchievements: achievements }); // Return original on error
+    }
+    
+  } catch (error) {
+    console.error('Error enhancing achievements:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.post('/enhance/extracurricular', clerkMiddleware(), async (req, res) => {
+  try {
+    const { activities, jobDescription } = req.body;
+    
+    if (!jobDescription || !Array.isArray(activities) || activities.length === 0) {
+      return res.json({ enhancedActivities: activities }); // Return original
+    }
+    
+    const prompt = `
+Job Description:
+${jobDescription}
+
+Candidate's Extracurricular Activities:
+${activities.map((act, i) => `
+Activity ${i+1}: ${act.name || ''}
+Role: ${act.role || ''}
+Organization: ${act.organization || ''}
+Period: ${act.period || ''}
+Description: ${act.description || ''}
+`).join('\n')}
+
+Based on this job description, enhance the extracurricular activities to better align with the job requirements:
+1. Keep the original activity names, roles, organizations, and periods
+2. Enhance descriptions to highlight transferable skills relevant to the job
+3. Prioritize activities that demonstrate leadership, teamwork, and skills mentioned in the job description
+4. Return the results in a structured JSON format
+
+Expected format:
+[
+  {
+    "name": "Original Activity Name",
+    "role": "Original Role",
+    "organization": "Original Organization",
+    "period": "Original Period",
+    "description": "Enhanced description highlighting transferable skills",
+    "relevanceScore": 75
+  },
+  ...
+]
+`;
+
+    const aiResponse = await callAI(prompt, true);
+    
+    if (!aiResponse) {
+      return res.json({ enhancedActivities: activities });
+    }
+    
+    try {
+      // Parse JSON response
+      const cleanedResponse = cleanJsonResponse(aiResponse);
+      const enhancedActivities = JSON.parse(cleanedResponse);
+      
+      // Sort by relevance score if available
+      if (enhancedActivities.some(a => a.relevanceScore)) {
+        enhancedActivities.sort((a, b) => (b.relevanceScore || 0) - (a.relevanceScore || 0));
+      }
+      
+      res.json({ enhancedActivities });
+    } catch (jsonError) {
+      console.error('Error parsing AI response:', jsonError);
+      res.json({ enhancedActivities: activities }); // Return original on error
+    }
+    
+  } catch (error) {
+    console.error('Error enhancing extracurricular activities:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
 // Unified route to enhance all resume sections at once
 app.post('/enhance/resume', clerkMiddleware(), async (req, res) => {
   try {
-    const { formData } = req.body;
+    const { formData,jobDescription } = req.body;
     
-    if (!formData || !formData.jobDescription) {
+    if (!formData || !jobDescription) {
       return res.json({ 
         enhancedData: null,
         message: 'Job description is required for AI enhancement'
@@ -355,67 +483,82 @@ app.post('/enhance/resume', clerkMiddleware(), async (req, res) => {
     }
     
     // Process all sections in parallel for efficiency
-    const [skillsResponse, projectsResponse, experienceResponse, achievementsResponse, certificationsResponse] = 
-      await Promise.all([
-        fetch(`http://localhost:${port}/enhance/skills`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ 
-            skills: formData.skills || [], 
-            jobDescription: formData.jobDescription 
-          })
-        }).then(r => r.json()),
-        
-        fetch(`http://localhost:${port}/enhance/projects`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ 
-            projects: formData.projects || [], 
-            jobDescription: formData.jobDescription 
-          })
-        }).then(r => r.json()),
-        
-        formData.isThereExperience ? fetch(`http://localhost:${port}/enhance/experience`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ 
-            experienceData: {
-              experienceRole: formData.experienceRole,
-              experienceCompany: formData.experienceCompany,
-              experiencePeriod: formData.experiencePeriod,
-              experienceTechStack: formData.experienceTechStack,
-              experienceDescription: formData.experienceDescription
-            }, 
-            jobDescription: formData.jobDescription 
-          })
-        }).then(r => r.json()) : Promise.resolve({ enhancedExperience: null }),
-        
-        formData.achievements ? fetch(`http://localhost:${port}/enhance/achievements`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ 
-            achievements: formData.achievements, 
-            jobDescription: formData.jobDescription 
-          })
-        }).then(r => r.json()) : Promise.resolve({ enhancedAchievements: '' }),
-        
-        formData.certifications ? fetch(`http://localhost:${port}/enhance/certifications`, {
+    const [
+      skillsResponse, 
+      projectsResponse, 
+      experienceResponse, 
+      certificationsResponse,
+      achievementsResponse, 
+      extracurricularResponse
+    ] = await Promise.all([
+      fetch(`http://localhost:${port}/enhance/skills`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          skills: formData.skills || [], 
+          jobDescription: jobDescription
+        })
+      }).then(r => r.json()),
+      
+      fetch(`http://localhost:${port}/enhance/projects`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          projects: formData.projects || [], 
+          jobDescription: jobDescription 
+        })
+      }).then(r => r.json()),
+      
+      formData.hasExperience ? fetch(`http://localhost:${port}/enhance/experience`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          experienceData: {
+            experiences: formData.experiences || []
+          }, 
+          jobDescription: jobDescription
+        })
+      }).then(r => r.json()) : Promise.resolve({ enhancedExperiences: [] }),
+      
+      formData.certifications && formData.certifications.length > 0 ? 
+        fetch(`http://localhost:${port}/enhance/certifications`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ 
             certifications: formData.certifications, 
-            jobDescription: formData.jobDescription 
+            jobDescription: jobDescription 
           })
-        }).then(r => r.json()) : Promise.resolve({ enhancedCertifications: '' })
-      ]);
+        }).then(r => r.json()) : Promise.resolve({ enhancedCertifications: [] }),
+      
+      formData.achievements && formData.achievements.length > 0 ? 
+        fetch(`http://localhost:${port}/enhance/achievements`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ 
+            achievements: formData.achievements, 
+            jobDescription: jobDescription 
+          })
+        }).then(r => r.json()) : Promise.resolve({ enhancedAchievements: [] }),
+        
+      formData.extracurricularActivities && formData.extracurricularActivities.length > 0 ? 
+        fetch(`http://localhost:${port}/enhance/extracurricular`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ 
+            activities: formData.extracurricularActivities, 
+            jobDescription: jobDescription 
+          })
+        }).then(r => r.json()) : Promise.resolve({ enhancedActivities: [] })
+    ]);
     
     // Combine all enhanced data
     const enhancedData = {
       enhancedSkills: skillsResponse.enhancedSkills || [],
       enhancedProjects: projectsResponse.enhancedProjects || [],
-      enhancedExperience: experienceResponse.enhancedExperience,
-      enhancedAchievements: achievementsResponse.enhancedAchievements || '',
-      enhancedCertifications: certificationsResponse.enhancedCertifications || ''
+      enhancedExperiences: experienceResponse.enhancedExperiences || [],
+      enhancedCertifications: certificationsResponse.enhancedCertifications || [],
+      enhancedAchievements: achievementsResponse.enhancedAchievements || [],
+      enhancedActivities: extracurricularResponse.enhancedActivities || []
     };
     
     res.json({ 

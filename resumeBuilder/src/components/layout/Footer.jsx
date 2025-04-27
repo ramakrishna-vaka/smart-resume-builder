@@ -20,7 +20,9 @@ const Footer = () => {
             <ul className="list-unstyled">
               <li><Link to="/" className="text-decoration-none text-white-50">Home</Link></li>
               <li><Link to="/templates" className="text-decoration-none text-white-50">Templates</Link></li>
-              <li><Link to="/builder" className="text-decoration-none text-white-50">Resume Builder</Link></li>
+              <li><Link to="/job-description/professional" className="text-decoration-none text-white-50">Job Description</Link></li>
+              <li><Link to="/generate-resume/professional" className="text-decoration-none text-white-50">Resume Builder</Link></li>
+
             </ul>
           </div>
           
@@ -34,23 +36,39 @@ const Footer = () => {
           </div>
           
           <div className="col-md-2">
-            <h5>Connect</h5>
-            <div className="d-flex gap-3 fs-5">
-              <a href="#" className="text-decoration-none text-white-50">
-                <i className="bi bi-facebook"></i>
-              </a>
-              <a href="#" className="text-decoration-none text-white-50">
-                <i className="bi bi-twitter"></i>
-              </a>
-              <a href="#" className="text-decoration-none text-white-50">
-                <i className="bi bi-linkedin"></i>
-              </a>
-              <a href="#" className="text-decoration-none text-white-50">
-                <i className="bi bi-instagram"></i>
-              </a>
-            </div>
-          </div>
+  <h5>Connect</h5>
+
+  {/* Social Icons */}
+  <div className="d-flex gap-3 fs-5 mb-2">
+    <a href="#" className="text-decoration-none text-white-50">
+      <i className="bi bi-facebook"></i>
+    </a>
+    <a href="#" className="text-decoration-none text-white-50">
+      <i className="bi bi-twitter"></i>
+    </a>
+    <a href="#" className="text-decoration-none text-white-50">
+      <i className="bi bi-linkedin"></i>
+    </a>
+    <a href="#" className="text-decoration-none text-white-50">
+      <i className="bi bi-instagram"></i>
+    </a>
+  </div>
+
+  {/* Feedback Link */}
+  <div className="mt-2">
+    <a
+      href="https://docs.google.com/forms/d/e/1FAIpQLSf0ra2c8eWlqYObhHSjTuZKjA7TPfrw3vFvLWCk09p-qt8gTg/viewform?usp=dialog"
+      target="_blank"
+      rel="noopener noreferrer"
+      className="text-white-50 text-decoration-none"
+    >
+      <i className="bi bi-chat-left-text me-1"></i> Feedback
+    </a>
+  </div>
+</div>
         </div>
+
+
         
         <hr className="my-3" />
         

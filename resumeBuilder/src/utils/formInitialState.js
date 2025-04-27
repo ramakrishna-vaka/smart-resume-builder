@@ -27,12 +27,8 @@ export const initialFormState = {
     graduationDegree: '',
     
     // Experience
-    isThereExperience: false,
-    experienceRole: '',
-    experienceCompany: '',
-    experienceTechStack: '',
-    experiencePeriod: '',
-    experienceDescription: '',
+    hasExperience: false,
+    experiences: [],
     
     // Projects
     projects: [{ 
@@ -43,10 +39,18 @@ export const initialFormState = {
       githubLink: ''
     }],
     
-    // Skills and other sections
+    // Skills
     skills: [],
-    achievements: '',
-    certifications: '',
-    extraCircularActivities: '',
+    
+    // Certifications (new structured format)
+    certifications: [],
+    
+    // Achievements (new structured format)
+    achievements: [],
+    
+    // Extracurricular Activities (new structured format)
+    extracurricularActivities: [],
+    
+    // Job Description (for enhancement)
     jobDescription: '',
   };

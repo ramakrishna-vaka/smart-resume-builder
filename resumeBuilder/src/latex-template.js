@@ -7,7 +7,9 @@ export function generateLaTeX(formData) {
     const linkedinUrl = formData.linkedinUrl || '';
     const githubUrl = formData.githubUrl || '';
     const leetcodeUrl = formData.leetcodeUrl || '';
-    const professionalTitles = formData.professionalTitles || 'Aspiring Java Developer | Full Stack Developer | Data Scientist';
+    
+    // Professional title with default
+    const professionalTitle = formData.professionalTitle || 'Aspiring Java Developer | Full Stack Developer | Data Scientist';
     
     // Get education info
     const graduationCollegeName = formData.graduationCollegeName || 'University';
@@ -17,10 +19,25 @@ export function generateLaTeX(formData) {
     const graduationScore = formData.graduationScore || '3.5';
     const graduationCollegeAddress = formData.graduationCollegeAddress || 'City, State';
     
-    // Escape special LaTeX characters
+    // Get intermediate education info if available
+    const intermediateCollegeName = formData.intermediateCollegeName || '';
+    const intermediateDegree = formData.intermediateDegree || 'Intermediate Education';
+    const intermediateCollegePeriod = formData.intermediateCollegePeriod || '';
+    const intermediateScore = formData.intermediateScore || '';
+    const intermediateCollegeAddress = formData.intermediateCollegeAddress || '';
+    
+    // Get school info if available
+    const schoolName = formData.schoolName || '';
+    const schoolDegree = formData.schoolDegree || 'Class X';
+    const schoolPeriod = formData.schoolPeriod || '';
+    const schoolScore = formData.schoolScore || '';
+    const schoolAddress = formData.schoolAddress || '';
+    
+    // Escape special LaTeX characters - IMPROVED VERSION
     const escapeLatex = (text) => {
       if (!text) return '';
-      return text
+      return String(text)
+        .replace(/\\/g, '\\textbackslash{}') // Handle backslash first to avoid double escaping
         .replace(/&/g, '\\&')
         .replace(/_/g, '\\_')
         .replace(/%/g, '\\%')
@@ -30,139 +47,259 @@ export function generateLaTeX(formData) {
         .replace(/\}/g, '\\}')
         .replace(/~/g, '\\textasciitilde{}')
         .replace(/\^/g, '\\textasciicircum{}')
-        // Don't escape backslashes in LaTeX commands
-        .replace(/([^\\])\\/g, '$1\\textbackslash{}')
-        .replace(/[<>]/g, '');
+        .replace(/[<>]/g, '')
+        .trim(); // Ensure no trailing or leading whitespace
     };
     
-    // Generate link with icon
-    const generateLink = (url, iconType) => {
-      if (!url) return '';
-      
-      let icon = '';
-      switch (iconType) {
-        case 'linkedin':
-          icon = '\\faLinkedin';
-          break;
-        case 'github':
-          icon = '\\faGithub';
-          break;
-        case 'leetcode':
-          icon = '\\faCode';
-          break;
-        default:
-          icon = '\\faLink';
-      }
-      
-      return `\\href{${escapeLatex(url)}}{${icon}~\\underline{${iconType}}}`;
-    };
-    
-    // Generate social links section
-    const socialLinks = [];
-    if (linkedinUrl) socialLinks.push(generateLink(linkedinUrl, 'linkedin'));
-    if (githubUrl) socialLinks.push(generateLink(githubUrl, 'github'));
-    if (leetcodeUrl) socialLinks.push(generateLink(leetcodeUrl, 'leetcode'));
-    
-    const socialLinksSection = socialLinks.length > 0 ? socialLinks.join(' $\\bullet$ ') : '';
-    
+    // Generate projects section
     let projectsSection = '';
-    if (Array.isArray(formData.projects)) {
-      projectsSection = formData.projects.map(project => {
-        if (!project.projectName) return '';
-        const bulletPoint = project.projectDescription
-          ? `\\item ${escapeLatex(project.projectDescription)}`
-          : '';
-        return `
-  \\subsection{\\href{${escapeLatex(project.projectLink)}}{\\textbf{${escapeLatex(project.projectName)}}} \\hfill \\textit{\\small ${escapeLatex(project.projectTechStack || '')}}
-  \\begin{itemize}[leftmargin=0.15in, label={}, itemsep=-2pt]
-  ${bulletPoint}
-  \\end{itemize}
-  \\vspace{-6pt}
-  `;
-      }).join('');
+    
+    // Always ensure we have at least one project to avoid LaTeX errors
+    const hasValidProjects = Array.isArray(formData.projects) && formData.projects.length > 0 && 
+                            formData.projects.some(p => p && p.projectName);
+                            
+    if (hasValidProjects) {
+      projectsSection = formData.projects
+        .filter(project => project && project.projectName) // Only process valid projects
+        .map(project => {
+          // Convert description to bullet points if it's not already in array form
+          let bulletPoints = [];
+          if (Array.isArray(project.projectDescription)) {
+            bulletPoints = project.projectDescription.filter(point => point && point.trim());
+          } else if (typeof project.projectDescription === 'string' && project.projectDescription.trim()) {
+            // Try to split by periods or semicolons to create bullet points
+            bulletPoints = project.projectDescription
+              .split(/(?<=[.;])\s+/)
+              .filter(point => point.trim().length > 0);
+            
+            // If we couldn't split it properly, just use it as a single bullet
+            if (bulletPoints.length <= 1) {
+              bulletPoints = [project.projectDescription];
+            }
+          }
+          
+          // CRITICAL FIX: Ensure we have at least one bullet point to avoid LaTeX errors
+          if (bulletPoints.length === 0) {
+            bulletPoints = ["Project involved development and implementation."];
+          }
+          
+          // Format bullet points safely - ensure proper escaping and closing braces
+          const formattedBullets = bulletPoints
+            .map(bullet => {
+              const escapedBullet = escapeLatex(bullet.trim());
+              return `    \\resumeItem{${escapedBullet}}`;
+            })
+            .join('\n');
+          
+          // Project links - make project name a hyperlink if link provided
+          const projectName = project.projectLink ? 
+            `\\href{${escapeLatex(project.projectLink)}}{\\textbf{${escapeLatex(project.projectName)}}}` :
+            `\\textbf{${escapeLatex(project.projectName)}}`;
+          
+          // Tech stack to the right
+          const techStack = project.projectTechStack ? 
+            `{${escapeLatex(project.projectTechStack)}}` : '{}';
+          
+          return `
+  \\resumeProjectHeading
+    {${projectName}}{${techStack}}
+    \\resumeItemListStart
+${formattedBullets}
+    \\resumeItemListEnd`;
+        }).join('\n');
+    }
+    
+    // FIX: If no valid projects, provide a default project to ensure LaTeX compilation works
+    if (!projectsSection) {
+      projectsSection = `
+  \\resumeProjectHeading
+    {\\textbf{Personal Project}}{Technology Stack}
+    \\resumeItemListStart
+    \\resumeItem{Created a web application using modern technologies}
+    \\resumeItemListEnd`;
     }
     
     // Generate experience section
-    let experienceSection = '';
-    if (formData.isThereExperience) {
-      experienceSection = `
-  \\section{Experience}
-  \\subsection{${escapeLatex(formData.experienceRole || 'Role')} | ${escapeLatex(formData.experienceCompany || 'Company')}}
-  \\vspace{4pt}
-  ${escapeLatex(formData.experiencePeriod || '2023-Present')} \\hfill ${escapeLatex(formData.experienceTechStack || 'Technology')}
-  \\begin{itemize}[leftmargin=0.15in, label={\\$\\bullet\\$}, itemsep=2pt]
-      \\item ${escapeLatex(formData.experienceDescription || 'Description of responsibilities and achievements.')}
-  \\end{itemize}
-  \\vspace{2pt}
-  `;
+    let experienceSection = "";
+    if (formData.hasExperience && Array.isArray(formData.experiences) && formData.experiences.length > 0 &&
+        formData.experiences.some(exp => exp && (exp.company || exp.role))) {
+      
+      // Start with the section header and list start command
+      experienceSection = "\\section{Experience}\n\\resumeSubHeadingListStart\n";
+      
+      // Add each valid experience
+      const validExperiences = formData.experiences.filter(exp => exp && (exp.company || exp.role));
+      
+      validExperiences.forEach(exp => {
+        // Escape fields and apply defaults
+        const company = escapeLatex(exp.company || "Company");
+        const period = escapeLatex(exp.period || "Present");
+        const role = escapeLatex(exp.role || "Role");
+        const location = escapeLatex(exp.location || "");
+        const techStack = escapeLatex(exp.techStack || "Technology");
+        
+        // Handle description - ensure we have at least one item
+        let bulletPoints = [];
+        if (typeof exp.description === 'string' && exp.description.trim()) {
+          // Try to split by bullet points or new lines
+          bulletPoints = exp.description
+            .split(/•|\n/)
+            .map(point => point.trim())
+            .filter(point => point.length > 0);
+          
+          // If we couldn't split it properly, just use it as a single bullet
+          if (bulletPoints.length === 0) {
+            bulletPoints = ["Worked on various projects and initiatives."];
+          }
+        } else if (Array.isArray(exp.description)) {
+          bulletPoints = exp.description.filter(point => point && point.trim());
+          // Ensure we have at least one bullet point
+          if (bulletPoints.length === 0) {
+            bulletPoints = ["Worked on various projects and initiatives."];
+          }
+        } else {
+          // Default bullet point if no description
+          bulletPoints = ["Worked on various projects and initiatives."];
+        }
+        
+        // Format bullet points - ensure we have content
+        const formattedBullets = bulletPoints
+          .map(bullet => {
+            const escapedBullet = escapeLatex(bullet.trim());
+            return `    \\resumeItem{${escapedBullet}}`;
+          })
+          .join('\n');
+        
+        experienceSection += `
+  \\resumeSubheading
+    {${company}}{${period}}
+    {${role}}{${location}}
+    \\resumeItemListStart
+${formattedBullets}
+    \\resumeItemListEnd
+  \\textbf{Technologies:} ${techStack}\n`;
+      });
+      
+      // End the section with the list end command
+      experienceSection += "\\resumeSubHeadingListEnd\n";
+    } else {
+      experienceSection = ""; // Empty string if no experience
     }
+     
+    // Generate skills section with the three categories
+    const languages = Array.isArray(formData.languages) ? formData.languages.join(', ') : 
+      (formData.languages || 'Java, Python, C/C++, SQL, HTML, CSS, JavaScript');
     
-    // Generate skills section
-    const allSkills = Array.isArray(formData.skills)
-      ? formData.skills.map(skill => typeof skill === 'object' ? skill.value : skill)
-      : [];
-    const skillsCategories = {
-      languages: allSkills,
-      core: allSkills,
-      technical: allSkills
-    };
+    const coreCompetencies = Array.isArray(formData.coreCompetencies) ? formData.coreCompetencies.join(', ') : 
+      (formData.coreCompetencies || 'OOPS, Database Management Systems, Computer Networks, SDLC, Operating Systems');
     
-    // Generate achievements section
-    const achievementsContent = formData.achievements || '';
-    const achievementsSection = achievementsContent ? `
-  \\section{Achievements}
-  \\begin{itemize}[leftmargin=0.15in, label={\\$\\bullet\\$}, itemsep=2pt]
-      \\item ${escapeLatex(achievementsContent)}
-  \\end{itemize}
-  \\vspace{2pt}
-  ` : '';
+    const technicalSkills = Array.isArray(formData.technicalSkills) ? formData.technicalSkills.join(', ') : 
+      (formData.technicalSkills || 'Git, Data structures and algorithms, MERN Stack, Power BI');
     
     // Generate certifications section
-    const certificationsContent = formData.certifications || '';
-    const certificationsSection = certificationsContent ? `
-  \\section{Certifications}
-  \\begin{itemize}[leftmargin=0.15in, label={\\$\\bullet\\$}, itemsep=2pt]
-      \\item ${escapeLatex(certificationsContent)}
-  \\end{itemize}
-  \\vspace{2pt}
-  ` : '';
+    let certificationsSection = '';
+    if (Array.isArray(formData.certifications) && formData.certifications.length > 0 && 
+        formData.certifications.some(cert => cert && cert.name)) {
+      certificationsSection = `
+\\section{Certifications}
+\\resumeSubHeadingListStart`;
+
+      formData.certifications
+        .filter(cert => cert && cert.name)
+        .forEach(cert => {
+          const certName = escapeLatex(cert.name || '');
+          const issuer = escapeLatex(cert.issuer || '');
+          const date = escapeLatex(cert.date || '');
+          const link = cert.link ? `\\href{${escapeLatex(cert.link)}}{${certName}}` : certName;
+          
+          certificationsSection += `
+  \\resumeProjectHeading
+    {\\textbf{${link}}}{${issuer} | ${date}}
+    \\resumeItemListStart
+      \\resumeItem{${escapeLatex(cert.description || 'Completed certification requirements and demonstrated proficiency.')}}
+    \\resumeItemListEnd`;
+        });
+      
+      certificationsSection += `
+\\resumeSubHeadingListEnd`;
+    }
+
+    // Generate achievements section
+    let achievementsSection = '';
+    if (Array.isArray(formData.achievements) && formData.achievements.length > 0 && 
+        formData.achievements.some(achievement => achievement && achievement.title)) {
+      achievementsSection = `
+\\section{Achievements}
+\\resumeSubHeadingListStart`;
+
+      formData.achievements
+        .filter(achievement => achievement && achievement.title)
+        .forEach(achievement => {
+          const title = escapeLatex(achievement.title || '');
+          const year = escapeLatex(achievement.year || '');
+          const organization = escapeLatex(achievement.organization || '');
+          
+          achievementsSection += `
+  \\resumeProjectHeading
+    {\\textbf{${title}}}{${year}}
+    {${organization}}{}
+    \\resumeItemListStart
+      \\resumeItem{${escapeLatex(achievement.description || 'Recognized for outstanding performance and contributions.')}}
+    \\resumeItemListEnd`;
+        });
+      
+      achievementsSection += `
+\\resumeSubHeadingListEnd`;
+    }
+
+    // Generate extracurricular activities section
+    let extracurricularSection = '';
+    if (Array.isArray(formData.extracurricularActivities) && formData.extracurricularActivities.length > 0 && 
+        formData.extracurricularActivities.some(activity => activity && activity.name)) {
+      extracurricularSection = `
+\\section{Extracurricular Activities}
+\\resumeSubHeadingListStart`;
+
+      formData.extracurricularActivities
+        .filter(activity => activity && activity.name)
+        .forEach(activity => {
+          const name = escapeLatex(activity.name || '');
+          const role = escapeLatex(activity.role || '');
+          const organization = escapeLatex(activity.organization || '');
+          const period = escapeLatex(activity.period || '');
+          
+          extracurricularSection += `
+  \\resumeSubheading
+    {${name}}{${period}}
+    {${role}}{${organization}}
+    \\resumeItemListStart
+      \\resumeItem{${escapeLatex(activity.description || 'Participated actively and contributed to the organization\'s goals.')}}
+    \\resumeItemListEnd`;
+        });
+      
+      extracurricularSection += `
+\\resumeSubHeadingListEnd`;
+    }
     
-    return `\\documentclass[letterpaper,11pt]{article}
+    // Format URLs for LinkedIn, GitHub, and LeetCode
+    const formattedLinkedinUrl = linkedinUrl ? `\\href{${escapeLatex(linkedinUrl)}}{\\underline{LinkedIn}}` : 'LinkedIn';
+    const formattedGithubUrl = githubUrl ? `\\href{${escapeLatex(githubUrl)}}{\\underline{GitHub}}` : 'GitHub';
+    const formattedLeetcodeUrl = leetcodeUrl ? `$|$ \\href{${escapeLatex(leetcodeUrl)}}{\\underline{LeetCode}}` : '';
+    
+    return `\\documentclass[letterpaper,10pt]{article}
   
   \\usepackage{latexsym}
   \\usepackage[empty]{fullpage}
   \\usepackage{titlesec}
   \\usepackage{marvosym}
-  \\usepackage[table,xcdraw,HTML,usenames,dvipsnames]{xcolor}
+  \\usepackage[usenames,dvipsnames]{color}
   \\usepackage{verbatim}
   \\usepackage{enumitem}
   \\usepackage[hidelinks]{hyperref}
   \\usepackage{fancyhdr}
   \\usepackage[english]{babel}
   \\usepackage{tabularx}
-  \\usepackage{fontawesome5}
-  \\usepackage{multicol}
-  \\usepackage[defaultsans]{opensans} % Use Open Sans as default sans font
-  \\usepackage{geometry}
-  
-  % Better spacing settings
-  \\setlength{\\multicolsep}{6pt}
-  \\setlength{\\columnsep}{10pt}
-  \\setlength{\\parindent}{0pt}
-  \\setlength{\\parskip}{6pt}
   \\input{glyphtounicode}
-  
-  % Set page geometry
-  \\geometry{
-    letterpaper,
-    top=0.75in,
-    bottom=0.75in,
-    left=0.75in,
-    right=0.75in
-  }
-  
-  % Better spacing for lists
-  \\setlist{itemsep=1pt, parsep=1pt}
   
   \\pagestyle{fancy}
   \\fancyhf{} % clear all header and footer fields
@@ -170,86 +307,136 @@ export function generateLaTeX(formData) {
   \\renewcommand{\\headrulewidth}{0pt}
   \\renewcommand{\\footrulewidth}{0pt}
   
-  % Adjust spacing
-  \\titlespacing*{\\section}{0pt}{10pt}{3pt}
-  \\titlespacing*{\\subsection}{0pt}{6pt}{2pt}
-  \\titlespacing*{\\subsubsection}{0pt}{3pt}{1pt}
+  % Adjust margins
+  \\addtolength{\\oddsidemargin}{-0.6in}
+  \\addtolength{\\evensidemargin}{-0.6in}
+  \\addtolength{\\textwidth}{1.2in}
+  \\addtolength{\\topmargin}{-.7in}
+  \\addtolength{\\textheight}{1.4in}
   
-  % Define colors
-  \\definecolor{primary}{HTML}{2b2b2b}
-  \\definecolor{headings}{HTML}{4a4a4a}
-  \\definecolor{subheadings}{HTML}{333333}
-  \\definecolor{linkcolor}{HTML}{0366d6}
+  \\urlstyle{same}
   
-  % Set main font
-  \\renewcommand{\\normalsize}{\\fontsize{10pt}{14pt}\\selectfont}
+  \\raggedbottom
+  \\raggedright
+  \\setlength{\\tabcolsep}{0in}
   
-  % Section formatting with better spacing
+  % Sections formatting
   \\titleformat{\\section}{
-  \\vspace{-6pt}\\raggedright\\small\\bfseries
+    \\vspace{-6pt}\\scshape\\raggedright\\small
   }{}{0em}{}[\\color{black}\\titlerule \\vspace{-8pt}]
   
-  % Subsection formatting with better spacing
-  \\titleformat{\\subsection}{
-    \\color{subheadings}\\raggedright\\bfseries
-  }{}{0em}{}
+  % Ensure that generate pdf is machine readable/ATS parsable
+  \\pdfgentounicode=1
   
-  % Link styling
-  \\hypersetup{
-    colorlinks=true,
-    linkcolor=black,
-    urlcolor=black
+  %-------------------------
+  % Custom commands
+  \\newcommand{\\resumeItem}[1]{
+    \\item\\small{#1}
   }
   
-  % Ensure that pdfTeX generates CID fonts instead of Type 3 fonts
-  \\pdfgentounicode=1
+  \\newcommand{\\resumeSubheading}[4]{
+    \\vspace{-2pt}\\item
+      \\begin{tabular*}{0.97\\textwidth}[t]{l@{\\extracolsep{\\fill}}r}
+        \\textbf{#1} & #2 \\\\
+        \\textit{\\small#3} & \\textit{\\small#4} \\\\
+      \\end{tabular*}\\vspace{-6pt}
+  }
+  
+  \\newcommand{\\resumeSubSubheading}[2]{
+      \\item
+      \\begin{tabular*}{0.97\\textwidth}{l@{\\extracolsep{\\fill}}r}
+        \\textit{\\small#1} & \\textit{\\small#2} \\\\
+      \\end{tabular*}\\vspace{-6pt}
+  }
+  
+  \\newcommand{\\resumeProjectHeading}[2]{
+      \\item
+      \\begin{tabular*}{0.97\\textwidth}{l@{\\extracolsep{\\fill}}r}
+        \\small#1 & \\hfill \\small#2 \\\\
+      \\end{tabular*}\\vspace{-5pt}
+  }
+  
+  \\newcommand{\\resumeSubItem}[1]{\\resumeItem{#1}\\vspace{-3pt}}
+  
+  \\renewcommand\\labelitemii{$\\vcenter{\\hbox{\\tiny$\\bullet$}}$}
+  
+  \\newcommand{\\resumeSubHeadingListStart}{\\begin{itemize}[leftmargin=0.15in, label={}]}
+  \\newcommand{\\resumeSubHeadingListEnd}{\\end{itemize}}
+  \\newcommand{\\resumeItemListStart}{\\begin{itemize}[leftmargin=0.15in, label={$\\bullet$}]}
+  \\newcommand{\\resumeItemListEnd}{\\end{itemize}\\vspace{-4pt}}
+  
+  %-------------------------------------------
+  %%%%%%  RESUME STARTS HERE  %%%%%%%%%%%%%%%%%%%%%%%%%%%%
   
   \\begin{document}
   
-  % Name and contact section
+  %----------HEADING---------
+  
   \\begin{center}
-    \\textbf{\\Large \\scshape ${escapeLatex(firstName)} ${escapeLatex(lastName)}} \\\\\
-    \\vspace{2pt}
-    \\fontsize{9}{11}\\selectfont{\\small 
-    ${escapeLatex(phoneNo)} $|$ 
-    \\href{mailto:${escapeLatex(email)}}{\\underline{${escapeLatex(email)}}}
-    ${linkedinUrl ? ` $|$ \\href{${escapeLatex(linkedinUrl)}}{\\underline{LinkedIn}}` : ''}
-    ${githubUrl ? ` $|$ \\href{${escapeLatex(githubUrl)}}{\\underline{GitHub}}` : ''}
-    }\\\\
-    \\vspace{2pt}
+      \\textbf{\\Large \\scshape ${escapeLatex(firstName)} ${escapeLatex(lastName)}} \\\\
+      \\vspace{2pt}
+      \\small{\\textit{${escapeLatex(professionalTitle)}}} \\\\
+      \\vspace{2pt}
+      \\small{${escapeLatex(phoneNo)} $|$ \\href{mailto:${escapeLatex(email)}}{\\underline{${escapeLatex(email)}}} $|$ 
+      ${formattedLinkedinUrl} $|$
+      ${formattedGithubUrl}${formattedLeetcodeUrl}} \\\\ 
   \\end{center}
   
-  % Education Section
+  %-----------EDUCATION-----------
   \\section{Education}
-  \\subsection{${graduationCollegeName}}
-  \\vspace{4pt}
-  ${graduationDegree} in ${graduationCourse} \\hfill ${graduationCollegePeriod} \\\\\
-  GPA: ${graduationScore} \\hfill ${graduationCollegeAddress}
-  \\vspace{6pt}
+  \\vspace{4pt} % Adjust this value to your desired space
+  \\resumeSubHeadingListStart
+  \\resumeSubheading
+      {${escapeLatex(graduationCollegeName)}}{${escapeLatex(graduationCollegeAddress)}}
+      {${escapeLatex(graduationDegree)} in ${escapeLatex(graduationCourse)}}{${escapeLatex(graduationCollegePeriod)}}
+      \\resumeItemListStart
+          \\resumeItem{\\textbf{CGPA: ${escapeLatex(graduationScore)}}}
+      \\resumeItemListEnd
+  ${intermediateCollegeName ? `
+  \\resumeSubheading
+      {${escapeLatex(intermediateCollegeName)}}{${escapeLatex(intermediateCollegeAddress)}}
+      {${escapeLatex(intermediateDegree)}}{${escapeLatex(intermediateCollegePeriod)}}
+      \\resumeItemListStart
+          \\resumeItem{\\textbf{Percentage: ${escapeLatex(intermediateScore)}}}
+      \\resumeItemListEnd
+  ` : ''}
+  ${schoolName ? `
+  \\resumeSubheading
+      {${escapeLatex(schoolName)}}{${escapeLatex(schoolAddress)}}
+      {${escapeLatex(schoolDegree)}}{${escapeLatex(schoolPeriod)}}
+      \\resumeItemListStart
+          \\resumeItem{\\textbf{CGPA: ${escapeLatex(schoolScore)}}}
+      \\resumeItemListEnd
+  ` : ''}
+  \\resumeSubHeadingListEnd
   
-  % Skills section
-  \\section{Technical Skills}
-  \\begin{itemize}[leftmargin=0.15in, label={}]
-  \\small
-    ${skillsCategories.languages.length ? `\\item \\textbf{Languages:} ${skillsCategories.languages.join(', ')}` : ''}
-    ${skillsCategories.core.length ? `\\item \\textbf{Core Competencies:} ${skillsCategories.core.join(', ')}` : ''}
-    ${skillsCategories.technical.length ? `\\item \\textbf{Technical Skills:} ${skillsCategories.technical.join(', ')}` : ''}
-  \\end{itemize}
-  \\vspace{2pt}
-  
-  % Experience Section
+  %-----------EXPERIENCE-----------
   ${experienceSection}
   
-  % Projects Section
+  %-----------Projects-----------
+  
   \\section{Projects}
+  \\resumeSubHeadingListStart
   ${projectsSection}
+  \\resumeSubHeadingListEnd
   
-  % Achievements Section
-  ${achievementsSection}
+  %-----------PROGRAMMING SKILLS-----------
+  \\section{Technical Skills}
+  \\vspace{4pt}
+  \\begin{itemize}[leftmargin=0.15in, label={}]
+    \\small{
+      \\item \\textbf{Languages:} ${escapeLatex(languages)}
+      \\item \\textbf{Core Competencies:} ${escapeLatex(coreCompetencies)}
+      \\item \\textbf{Technical Skills:} ${escapeLatex(technicalSkills)}
+    }
+  \\end{itemize}
   
-  % Certifications Section
+  %-------------------------------------------
   ${certificationsSection}
   
-  \\end{document}`;
-  }
+  ${achievementsSection}
   
+  ${extracurricularSection}
+  
+  \\end{document}`;
+}

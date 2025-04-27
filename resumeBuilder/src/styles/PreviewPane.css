@@ -1,113 +1,125 @@
 /* src/styles/PreviewPane.css */
-:root {
-    --page-width-px: 340px;
-    --page-height-px: 364px;
-    --resume-margin: 36px;
-    --preview-width: 540px;
-    --preview-height: 464px;
-    --scale-width: calc(var(--preview-width) / var(--page-width-px));
-    --scale-height: calc(var(--preview-height) / var(--page-height-px));
-    --preview-scale: min(var(--scale-width), var(--scale-height));
   
-    --card-padding: 20px;
-    --card-radius: 8px;
-    --card-bg: #fff;
-    --card-shadow: 0 4px 16px rgba(0,0,0,0.1);
-  }
-  
-  .preview-container {
-    width: var(--preview-width);
-    height: var(--preview-height);
-    padding: var(--card-padding);
-    background: var(--card-bg);
-    border-radius: var(--card-radius);
-    box-shadow: var(--card-shadow);
-    overflow: auto;       /* scroll vertically for all content */
-  }
-  
-  .preview-pane {
-    width: var(--page-width-px);
-    min-height: var(--page-height-px);
-    padding: var(--resume-margin);
-    background: #fafafa;
+.preview-pane {
+    width: 250px;
+    max-width: 100%; 
+    padding: 20px;
+    height: 350px;
+    background: #ffffff;
     box-shadow: 0 0 6px rgba(0,0,0,0.05);
-    transform: scale(var(--preview-scale));
-    transform-origin: top left;
-  }
+    position: relative; 
+    overflow-y: auto;
+    overflow-x: hidden;
+}
   
-  /* Header */
-  .preview-header {
+/* Header */
+.preview-header {
     text-align: center;
-    margin-bottom: 4pt;
-  }
-  .resume-name {
+    margin-bottom: 5px;
+}
+
+.resume-name {
     font-variant: small-caps;
-    font-size: 7pt;
+    font-size: 11px;
     color: #2b2b2b;
     margin: 0;
-  }
-  .contact-info {
-    font-size: 3.5pt;
+}
+
+.contact-info {
+    font-size: 7px;
     color: #666;
-  }
+}
   
-  /* Section headings */
-  .resume-section {
-    margin-bottom: 4pt;
-  }
-  .section-heading {
+/* Section headings */
+.resume-section {
+    margin-bottom: 5px;
+}
+
+.section-heading {
     font-variant: small-caps;
-    font-size: 10px !important;       
-    line-height: 1 !important;        /* no extra leading */
-    margin: 1px 0 !important;         /* almost no spacing around */
-    padding-bottom: 1px !important;   /* minimal underline gap */
+    font-size: 9px !important;       
+    line-height: 1 !important;
+    margin: 1px 0 !important;
+    padding-bottom: 1px !important;
     border-bottom: 1px solid #ddd !important;
-    letter-spacing: 0.3px !important; /* slight tracking for sc */
-  }
+    letter-spacing: 0.3px !important;
+}
   
-  /* Education */
-  .education-item {
-    margin-bottom: 3pt;
-  }
-  .item-title {
-    font-size: 4.5pt;
+/* Education */
+.education-item {
+    margin-bottom: 4px;
+}
+
+.item-title {
+    font-size: 8px;
     font-weight: 600;
     color: #222;
-    margin: 0 0 1pt;
-  }
-  .edu-line {
+    margin: 0 0 1px;
+}
+
+.edu-line {
     display: flex;
     justify-content: space-between;
-    font-size: 3.5pt;
-    margin-bottom: 1pt;
-  }
-  .period-text {
+    font-size: 7px;
+    margin-bottom: 1px;
+}
+
+.period-text {
     color: #555;
-  }
+}
   
-  /* Skills */
-  .skills-content {
-    font-size: 3pt;
+/* Skills */
+.skills-content {
+    font-size: 7px;
     line-height: 1.2;
-  }
+}
   
-  /* Experience & Projects */
-  .experience-item,
-  .project-item {
-    margin-bottom: 3pt;
-  }
-  .tech-stack {
-    font-size: 3pt;
+/* Experience & Projects */
+.experience-item,
+.project-item {
+    margin-bottom: 4px;
+}
+
+.tech-stack {
+    font-size: 7px;
     font-style: italic;
-  }
-  .description-text {
-    font-size: 3pt;
+}
+
+.description-text {
+    font-size: 7px;
     line-height: 1.1;
-    margin-top: 2pt;
-  }
-  .list-item {
+    margin-top: 2px;
+}
+
+.list-item {
     padding-left: 6px;
     text-indent: -6px;
     margin-bottom: 1px;
-  }
-  
+}
+
+/* Additional Information Sections */
+.certification-item,
+.achievement-item,
+.activity-item {
+  margin-bottom: 4px;
+}
+
+.certification-item .item-title,
+.achievement-item .item-title,
+.activity-item .item-title {
+  font-size: 8px;
+  font-weight: 600;
+  margin-bottom: 1px;
+  color: #333;
+}
+
+.organization-text {
+  font-style: italic;
+  color: #555;
+  font-size: 7px;
+}
+
+.description-text {
+  margin-top: 2px;
+  font-size: 7px;
+}

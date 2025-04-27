@@ -14,7 +14,7 @@ const EducationForm = ({ formData, handleChange }) => {
               type="text"
               className="form-control"
               id="graduationCollegeName"
-              placeholder="e.g., Stanford University"
+              placeholder=""
               value={formData.graduationCollegeName}
               onChange={handleChange}
               required
@@ -27,7 +27,7 @@ const EducationForm = ({ formData, handleChange }) => {
               type="text"
               className="form-control"
               id="graduationCollegeAddress"
-              placeholder="e.g., Palo Alto, CA"
+              placeholder=""
               value={formData.graduationCollegeAddress}
               onChange={handleChange}
             />
@@ -86,7 +86,7 @@ const EducationForm = ({ formData, handleChange }) => {
               type="text"
               className="form-control"
               id="graduationScore"
-              placeholder="e.g., 3.8/4.0"
+              placeholder=""
               value={formData.graduationScore}
               onChange={handleChange}
             />
@@ -98,7 +98,7 @@ const EducationForm = ({ formData, handleChange }) => {
               type="text"
               className="form-control"
               id="graduationCollegePeriod"
-              placeholder="e.g., 2018-2022"
+              placeholder=""
               value={formData.graduationCollegePeriod}
               onChange={handleChange}
               required

@@ -100,9 +100,6 @@ const SkillsForm = ({ skills, handleSkillsChange }) => {
         placeholder="Search and select your technical skills..."
         classNamePrefix="select"
       />
-      <div className="form-text mt-2">
-        Select all relevant technical skills. The skills you select here will be enhanced based on the job description you provide.
-      </div>
     </div>
   );
 };

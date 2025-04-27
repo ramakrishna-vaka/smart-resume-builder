@@ -1,4 +1,4 @@
-// src/components/form/FormContainer.jsx
+// src/components/form/FormContainer.jsx (updated)
 import React, { useEffect } from 'react';
 import PersonalInfoForm from './PersonalInfoForm';
 import EducationForm from './EducationForm';
@@ -7,7 +7,13 @@ import ProjectsForm from './ProjectsForm';
 import SkillsForm from './SkillsForm';
 import AdditionalInfoForm from './AdditionalInfoForm';
 
-const FormContainer = ({ formData, onFormDataChange, onSubmit, isLoading }) => {
+const FormContainer = ({ 
+  formData,
+  onFormDataChange, 
+  onSubmit, 
+  isLoading, 
+  activeSectionId,
+  sections }) => {
   // Function to adjust all textareas when the component mounts
   useEffect(() => {
     const adjustAllTextareas = () => {
@@ -60,6 +66,7 @@ const FormContainer = ({ formData, onFormDataChange, onSubmit, isLoading }) => {
     onFormDataChange(updatedFormData);
   };
 
+  // Project handlers
   const handleProjectChange = (index, field, value) => {
     const updatedProjects = [...formData.projects];
     updatedProjects[index] = {
@@ -105,6 +112,213 @@ const FormContainer = ({ formData, onFormDataChange, onSubmit, isLoading }) => {
     onFormDataChange(updatedFormData);
   };
 
+  // Experience handlers
+  const handleExperienceChange = (index, field, value) => {
+    const updatedExperiences = [...formData.experiences];
+    updatedExperiences[index] = {
+      ...updatedExperiences[index],
+      [field]: value
+    };
+    
+    const updatedFormData = {
+      ...formData,
+      experiences: updatedExperiences
+    };
+    
+    onFormDataChange(updatedFormData);
+  };
+  
+  const addExperience = () => {
+    // Use the onFormDataChange prop instead of direct setFormData
+    onFormDataChange({
+      ...formData,
+      experiences: [
+        ...(formData.experiences || []),
+        {
+          company: '',
+          role: '',
+          period: '',
+          description: '',
+          techStack: ''
+        }
+      ]
+    });
+  };
+  
+  const removeExperience = (index) => {
+    if (formData.experiences.length <= 1) return;
+    
+    const updatedExperiences = [...formData.experiences];
+    updatedExperiences.splice(index, 1);
+    
+    const updatedFormData = {
+      ...formData,
+      experiences: updatedExperiences
+    };
+    
+    onFormDataChange(updatedFormData);
+  };
+
+  // New handler for Certifications
+  const handleCertificationChange = (index, field, value) => {
+    const updatedCertifications = [...(formData.certifications || [])];
+    updatedCertifications[index] = {
+      ...updatedCertifications[index],
+      [field]: value
+    };
+    
+    const updatedFormData = {
+      ...formData,
+      certifications: updatedCertifications
+    };
+    
+    onFormDataChange(updatedFormData);
+  };
+
+  const addCertification = () => {
+    const updatedFormData = {
+      ...formData,
+      certifications: [
+        ...(formData.certifications || []),
+        {
+          name: '',
+          issuer: '',
+          date: '',
+          link: '',
+          description: ''
+        }
+      ]
+    };
+    
+    onFormDataChange(updatedFormData);
+  };
+
+  const removeCertification = (index) => {
+    const updatedCertifications = [...(formData.certifications || [])];
+    updatedCertifications.splice(index, 1);
+    
+    const updatedFormData = {
+      ...formData,
+      certifications: updatedCertifications
+    };
+    
+    onFormDataChange(updatedFormData);
+  };
+
+  // New handler for Achievements
+  const handleAchievementChange = (index, field, value) => {
+    const updatedAchievements = [...(formData.achievements || [])];
+    updatedAchievements[index] = {
+      ...updatedAchievements[index],
+      [field]: value
+    };
+    
+    const updatedFormData = {
+      ...formData,
+      achievements: updatedAchievements
+    };
+    
+    onFormDataChange(updatedFormData);
+  };
+
+  const addAchievement = () => {
+    const updatedFormData = {
+      ...formData,
+      achievements: [
+        ...(formData.achievements || []),
+        {
+          title: '',
+          year: '',
+          organization: '',
+          description: ''
+        }
+      ]
+    };
+    
+    onFormDataChange(updatedFormData);
+  };
+
+  const removeAchievement = (index) => {
+    const updatedAchievements = [...(formData.achievements || [])];
+    updatedAchievements.splice(index, 1);
+    
+    const updatedFormData = {
+      ...formData,
+      achievements: updatedAchievements
+    };
+    
+    onFormDataChange(updatedFormData);
+  };
+
+  // New handler for Extracurricular Activities
+  const handleActivityChange = (index, field, value) => {
+    const updatedActivities = [...(formData.extracurricularActivities || [])];
+    updatedActivities[index] = {
+      ...updatedActivities[index],
+      [field]: value
+    };
+    
+    const updatedFormData = {
+      ...formData,
+      extracurricularActivities: updatedActivities
+    };
+    
+    onFormDataChange(updatedFormData);
+  };
+
+  const addActivity = () => {
+    const updatedFormData = {
+      ...formData,
+      extracurricularActivities: [
+        ...(formData.extracurricularActivities || []),
+        {
+          name: '',
+          role: '',
+          organization: '',
+          period: '',
+          description: ''
+        }
+      ]
+    };
+    
+    onFormDataChange(updatedFormData);
+  };
+
+  const removeActivity = (index) => {
+    const updatedActivities = [...(formData.extracurricularActivities || [])];
+    updatedActivities.splice(index, 1);
+    
+    const updatedFormData = {
+      ...formData,
+      extracurricularActivities: updatedActivities
+    };
+    
+    onFormDataChange(updatedFormData);
+  };
+
+  // Toggle experience section
+  const handleToggleExperience = (e) => {
+    const hasExperience = e.target.checked;
+    const updatedFormData = { ...formData, hasExperience };
+    
+    // If turning on experience, initialize with one empty experience
+    if (hasExperience && (!formData.experiences || formData.experiences.length === 0)) {
+      updatedFormData.experiences = [{ company: '', role: '', period: '', techStack: '', description: '' }];
+    }
+    
+    onFormDataChange(updatedFormData);
+  };
+
+  React.useEffect(() => {
+    if (formData.hasExperience && (!formData.experiences || formData.experiences.length === 0)) {
+      onFormDataChange({
+        ...formData,
+        experiences: [{ company: '', role: '', period: '', techStack: '', description: '' }]
+      });
+    }
+  }, [formData.hasExperience]);
+  
+
   return (
     <div className="form-container">
       <h2 className="mb-4">Build Your Professional Resume</h2>
@@ -144,21 +358,23 @@ const FormContainer = ({ formData, onFormDataChange, onSubmit, isLoading }) => {
                 <input
                   className="form-check-input"
                   type="checkbox"
-                  id="isThereExperience"
-                  checked={formData.isThereExperience}
-                  onChange={handleChange}
+                  id="hasExperience"
+                  checked={formData.hasExperience || false}
+                  onChange={handleToggleExperience}
                 />
-                <label className="form-check-label" htmlFor="isThereExperience">
+                <label className="form-check-label" htmlFor="hasExperience">
                   I have work experience
                 </label>
               </div>
             </div>
           </div>
-          {formData.isThereExperience && (
+          {formData.hasExperience && (
             <div className="card-body">
               <ExperienceForm 
                 formData={formData} 
-                handleChange={handleChange} 
+                handleExperienceChange={handleExperienceChange}
+                addExperience={addExperience}
+                removeExperience={removeExperience}
               />
             </div>
           )}
@@ -209,6 +425,15 @@ const FormContainer = ({ formData, onFormDataChange, onSubmit, isLoading }) => {
             <AdditionalInfoForm 
               formData={formData}
               handleChange={handleChange}
+              handleCertificationChange={handleCertificationChange}
+              handleAchievementChange={handleAchievementChange}
+              handleActivityChange={handleActivityChange}
+              addCertification={addCertification}
+              removeCertification={removeCertification}
+              addAchievement={addAchievement}
+              removeAchievement={removeAchievement}
+              addActivity={addActivity}
+              removeActivity={removeActivity}
             />
           </div>
         </div>
