@@ -35,7 +35,7 @@ mongoose.connect(MONGODB_URI)
   
 //app.use(cors());
 app.use(cors({
-  origin: 'http://localhost:5174', // your frontend URL
+  origin: 'https://smart-resume-builder-five.vercel.app', // your frontend URL
   credentials: true
 }));
 app.use(bodyParser.json({ limit: '10mb' }));  // Increased limit for larger JSON payloads
