@@ -1,5 +1,6 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import * as ReactRouterDOM from 'react-router-dom';
+const { BrowserRouter, Routes, Route } = ReactRouterDOM;
 import { ClerkProvider, SignedIn, SignedOut, RedirectToSignIn } from '@clerk/clerk-react';
 import Header from './components/layout/Header';
 import Footer from './components/layout/Footer';
@@ -16,7 +17,7 @@ const clerkPubKey = "pk_test_bWFzdGVyLWRvbmtleS03MS5jbGVyay5hY2NvdW50cy5kZXYk";
 function App() {
   return (
     <ClerkProvider publishableKey={clerkPubKey}>
-      <Router>
+      <BrowserRouter>
         <div className="d-flex flex-column min-vh-100">
           <Header />
           <main className="flex-grow-1">
@@ -68,7 +69,7 @@ function App() {
           </main>
           <Footer />
         </div>
-      </Router>
+      </BrowserRouter>
     </ClerkProvider>
   );
 }

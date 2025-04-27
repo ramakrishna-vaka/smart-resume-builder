@@ -72,26 +72,6 @@ const ProjectsForm = ({ projects, handleProjectChange, removeProject }) => {
                 required
               />
             </div>
-
-            
-            
-            {/* <div className="col-md-6">
-              <label htmlFor={`githubLink${index}`} className="form-label">GitHub Repository URL</label>
-              <div className="input-group">
-                <span className="input-group-text">
-                  <i className="fab fa-github"></i>
-                </span>
-                <input
-                  type="url"
-                  className="form-control"
-                  id={`githubLink${index}`}
-                  placeholder=""
-                  value={project.githubLink || ''}
-                  onChange={(e) => handleProjectChange(index, 'githubLink', e.target.value)}
-                />
-              </div>
-              <div className="form-text"></div>
-            </div> */}
             
             <div className="col-12">
               <label htmlFor={`projectDescription${index}`} className="form-label">Description</label>
