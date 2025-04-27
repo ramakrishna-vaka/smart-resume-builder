@@ -13,6 +13,8 @@ import { formatFormDataForApi } from '../../utils/dataFormatter';
 
 const ResumeBuilder = () => {
 
+  const API_URL = 'https://smart-resume-builder-backend.onrender.com';
+
   useEffect(() => {
     // Initialize sticky preview handler
     const cleanup = initStickyPreviewHandler();
@@ -121,7 +123,7 @@ const ResumeBuilder = () => {
         return;
       }
       
-      const enhancementResponse = await fetch('http://localhost:3000/enhance/resume', {
+      const enhancementResponse = await fetch(`${API_URL}/enhance/resume`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -219,7 +221,7 @@ if (isDirty.extracurricularActivities && Array.isArray(enhancedData.enhancedActi
       // Get the authenticated user's resume data
       setSuccessMessage('');
     setErrorMessage('');
-      const response = await fetch('http://localhost:3000/api/resume-data/fetch', {
+      const response = await fetch(`${API_URL}/api/resume-data/fetch`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -282,7 +284,7 @@ if (isDirty.extracurricularActivities && Array.isArray(enhancedData.enhancedActi
       // Step 1: Save data to MongoDB if requested by the user
       if (saveDataForFuture) {
         try {
-          const saveResponse = await fetch('http://localhost:3000/api/resume-data/save', {
+          const saveResponse = await fetch(`${API_URL}/api/resume-data/save`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -303,7 +305,7 @@ if (isDirty.extracurricularActivities && Array.isArray(enhancedData.enhancedActi
       }
       
       // Step 2: Generate the Resume PDF - Now just sending the formatted data
-      const response = await fetch('http://localhost:3000/generate-resume', {
+      const response = await fetch(`${API_URL}/generate-resume`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
