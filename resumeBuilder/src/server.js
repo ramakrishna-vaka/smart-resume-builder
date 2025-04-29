@@ -34,8 +34,22 @@ mongoose.connect(MONGODB_URI)
 
   
 //app.use(cors());
+const allowedOrigins = [
+  'https://smart-resume-builder-five.vercel.app', 
+  'http://localhost:5173'
+];
+
 app.use(cors({
-  origin: 'https://smart-resume-builder-five.vercel.app', // your frontend URL
+  origin: function(origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    
+    if (allowedOrigins.indexOf(origin) === -1) {
+      const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
+      return callback(new Error(msg), false);
+    }
+    return callback(null, true);
+  },
   credentials: true
 }));
 app.use(bodyParser.json({ limit: '10mb' }));  // Increased limit for larger JSON payloads
@@ -723,7 +737,11 @@ app.post('/generate-resume', clerkMiddleware(), async (req, res) => {
 });
 
 // LaTeX compilation function
-const PDFLATEX = `"C:\\Program Files\\MiKTeX\\miktex\\bin\\x64\\pdflatex.exe"`;
+const PDFLATEX = process.env.PDFLATEX_PATH || 'pdflatex';
+
+if (!PDFLATEX) {
+  console.error('PDFLATEX_PATH environment variable is not set. Defaulting to "pdflatex".');
+}
 
 function compileLaTeX(texFile) {
   return new Promise((resolve, reject) => {

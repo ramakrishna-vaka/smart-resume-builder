@@ -216,50 +216,66 @@ if (isDirty.extracurricularActivities && Array.isArray(enhancedData.enhancedActi
     }
   };
   
-  const loadPreviousData = async () => {
-    try {
-      // Get the authenticated user's resume data
-      setSuccessMessage('');
+  // Updated loadPreviousData function with better error handling
+const loadPreviousData = async () => {
+  try {
+    setSuccessMessage('');
     setErrorMessage('');
-      const response = await fetch(`${API_URL}/api/resume-data/fetch`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include'
-      });
-      
-      if (response.ok) {
-        const { success, data } = await response.json();
-        
-        if (success && data) {
-          // Convert skills back to the format expected by the form (with value/label)
-          const formattedData = {
-            ...data,
-            skills: Array.isArray(data.skills) 
-              ? data.skills.map(skill => typeof skill === 'string' 
-                  ? { value: skill, label: skill } 
-                  : skill)
-              : []
-          };
-          
-          // Set form data with server source to avoid marking all fields as dirty
-          setFormData(formattedData);
-          // Reset dirty state since we're loading from saved data
-          setIsDirty({});
-          setSuccessMessage('Previous resume data loaded successfully!');
-        } else {
-          setErrorMessage('No previous resume data found.');
-        }
-      } else {
-        const errorData = await response.json();
-        setErrorMessage(errorData.message || 'Failed to load previous data.');
-      }
-    } catch (error) {
-      console.error('Error loading previous data:', error);
-      setErrorMessage('Failed to load previous data. Please try again.');
+    
+    // Log request for debugging
+    console.log('Fetching resume data from:', `${API_URL}/api/resume-data/fetch`);
+    
+    const response = await fetch(`${API_URL}/api/resume-data/fetch`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json' // Explicitly request JSON response
+      },
+      credentials: 'include' // Ensure cookies are sent
+    });
+    
+    // Check if response is OK before processing
+    if (!response.ok) {
+      const text = await response.text();
+      console.error('Server returned non-OK response:', response.status, text);
+      throw new Error(`Server returned ${response.status}: ${text.substring(0, 100)}...`);
     }
-  };
+    
+    // Check content type to provide better error messages
+    const contentType = response.headers.get('content-type');
+    if (!contentType || !contentType.includes('application/json')) {
+      const text = await response.text();
+      console.error('Expected JSON but got:', contentType, text.substring(0, 100));
+      throw new Error(`Expected JSON response but got ${contentType}`);
+    }
+    
+    const responseData = await response.json();
+    console.log('Resume data response:', responseData);
+    
+    if (responseData.success && responseData.data) {
+      // Convert skills back to the format expected by the form (with value/label)
+      const formattedData = {
+        ...responseData.data,
+        skills: Array.isArray(responseData.data.skills) 
+          ? responseData.data.skills.map(skill => typeof skill === 'string' 
+              ? { value: skill, label: skill } 
+              : skill)
+          : []
+      };
+      
+      // Set form data with server source to avoid marking all fields as dirty
+      setFormData(formattedData);
+      // Reset dirty state since we're loading from saved data
+      setIsDirty({});
+      setSuccessMessage('Previous resume data loaded successfully!');
+    } else {
+      setErrorMessage(responseData.message || 'No previous resume data found.');
+    }
+  } catch (error) {
+    console.error('Error loading previous data:', error);
+    setErrorMessage(`Failed to load previous data: ${error.message}`);
+  }
+};
 
   const handleSubmit = async (e) => {
     e.preventDefault();

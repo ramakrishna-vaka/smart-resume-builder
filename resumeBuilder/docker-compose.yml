@@ -1,0 +1,12 @@
+version: "3"
+services:
+  resume-builder:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      - PORT=3000
+      - MONGODB_URI=mongodb+srv://ramakrishnavaka04:YBS8Aexb4VKdtdPG@cluster0.xhzxm6g.mongodb.net/resume-builder?retryWrites=true&w=majority&appName=Cluster0
+      - OPENROUTER_API_KEY=your_api_key_here
+    volumes:
+      - ./temp:/usr/src/app/temp

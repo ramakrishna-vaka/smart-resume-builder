@@ -46,6 +46,13 @@ router.get('/fetch', async (req, res) => {
   try {
     const { userId } = req.auth;
     
+    if (!userId) {
+        return res.status(401).json({ 
+          success: false, 
+          message: 'Authentication required' 
+        });
+      }
+
     const resumeData = await ResumeData.findOne({ userId });
     
     if (!resumeData) {
