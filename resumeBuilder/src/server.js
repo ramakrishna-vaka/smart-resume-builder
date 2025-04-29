@@ -53,12 +53,13 @@ app.use(cors({
   credentials: true
 }));
 app.use(bodyParser.json({ limit: '10mb' }));  // Increased limit for larger JSON payloads
-app.use(express.static(path.join(__dirname, 'client/build')));
 
 app.use(clerkMiddleware());
 
 // Routes
 app.use('/api/resume-data', resumeDataRoutes);
+
+app.use(express.static(path.join(__dirname, 'client/build')));
 
 // Basic route to check if server is running
 app.get('/', (req, res) => {
