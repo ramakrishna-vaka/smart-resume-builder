@@ -70,12 +70,6 @@ app.get('/', (req, res) => {
 const tempDir = path.join(__dirname, 'temp');
 fs.ensureDirSync(tempDir);
 
-// Authentication middleware is applied after static files but before API routes
-//app.use(clerkMiddleware());
-
-// Add resume data routes (these are already protected by clerkMiddleware)
-app.use('/api/resume-data', resumeDataRoutes);
-
 function cleanJsonResponse(response) {
   // Remove markdown code blocks and any other non-JSON formatting
   return response
