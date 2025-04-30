@@ -13,8 +13,7 @@ dotenv.config();
 
 // Import Clerk properly - use your exact Clerk package imports
 import * as clerk from '@clerk/clerk-sdk-node';
-
-clerk.setClerkApiKey(process.env.CLERK_SECRET_KEY || 'sk_test_MgZVkNNnyGngblhBigvVsBRKbi5ptiUH36T7OnbEWb');
+import { verifyToken } from '@clerk/backend';
 
 import resumeDataRoutes from './routes/resumeData.js';
 
@@ -58,8 +57,6 @@ app.use(cors({
 app.use(bodyParser.json({ limit: '10mb' }));
 
 // Middleware to extract and verify the JWT token
-import { verifyToken } from '@clerk/backend';
-
 const requireAuth = async (req, res, next) => {
   try {
     const authHeader = req.headers.authorization;
