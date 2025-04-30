@@ -1,6 +1,8 @@
 import express from 'express';
 import ResumeData from '../models/ResumeData.js';
-import clerk from '@clerk/clerk-sdk-node';
+const clerk = require('@clerk/clerk-sdk-node');
+import dotenv from 'dotenv';
+dotenv.config();
 
 const router = express.Router();
 

@@ -12,7 +12,7 @@ import dotenv from 'dotenv';
 dotenv.config(); 
 
 // Import Clerk properly - use your exact Clerk package imports
-import clerk from '@clerk/clerk-sdk-node';
+const clerk = require('@clerk/clerk-sdk-node');
 
 clerk.setClerkApiKey(process.env.CLERK_SECRET_KEY || 'sk_test_MgZVkNNnyGngblhBigvVsBRKbi5ptiUH36T7OnbEWb');
 
