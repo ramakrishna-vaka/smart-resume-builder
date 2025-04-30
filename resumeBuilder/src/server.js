@@ -10,9 +10,16 @@ import { dirname } from 'path';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 dotenv.config(); 
-//import { clerkClient } from '@clerk/backend';
-import { clerkMiddleware } from '@clerk/express';
-import resumeDataRoutes from './routes/resumeData.js'; // Note the .js extension
+
+// Import Clerk properly - use your exact Clerk package imports
+import { Clerk } from '@clerk/clerk-sdk-node';
+
+// Initialize Clerk with your secret key
+const clerk = new Clerk({
+  secretKey: process.env.CLERK_SECRET_KEY || 'sk_test_MgZVkNNnyGngblhBigvVsBRKbi5ptiUH36T7OnbEWb'
+});
+
+import resumeDataRoutes from './routes/resumeData.js';
 
 // Get current directory
 const __filename = fileURLToPath(import.meta.url);
@@ -32,8 +39,6 @@ mongoose.connect(MONGODB_URI)
     console.error('❌ MongoDB connection error:', err);
   });
 
-  
-//app.use(cors());
 const allowedOrigins = [
   'https://smart-resume-builder-five.vercel.app', 
   'http://localhost:5173'
@@ -52,35 +57,104 @@ app.use(cors({
   },
   credentials: true
 }));
-app.use(bodyParser.json({ limit: '10mb' }));  // Increased limit for larger JSON payloads
 
-app.use(clerkMiddleware());
+app.use(bodyParser.json({ limit: '10mb' }));
 
-// Routes
-app.use('/api/resume-data', resumeDataRoutes);
+// Middleware to extract and verify the JWT token
+const requireAuth = async (req, res, next) => {
+  try {
+    // Get the Authorization header
+    const authHeader = req.headers.authorization;
+    
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return res.status(401).json({ 
+        success: false, 
+        error: 'Authentication required', 
+        message: 'No valid authorization token provided'
+      });
+    }
+    
+    // Extract the token
+    const token = authHeader.split(' ')[1];
+    
+    if (!token) {
+      return res.status(401).json({ 
+        success: false, 
+        error: 'Authentication required',
+        message: 'No token found in authorization header'
+      });
+    }
+    
+    try {
+      // Verify the token with Clerk
+      const verifiedToken = await clerk.verifyToken(token);
+      
+      // Set the user ID in the request object
+      req.auth = {
+        userId: verifiedToken.sub
+      };
+      
+      next();
+    } catch (tokenError) {
+      console.error('Token verification error:', tokenError);
+      return res.status(401).json({ 
+        success: false, 
+        error: 'Authentication failed',
+        message: 'Invalid or expired token'
+      });
+    }
+  } catch (error) {
+    console.error('Auth middleware error:', error);
+    return res.status(500).json({ 
+      success: false, 
+      error: 'Server error',
+      message: 'An error occurred during authentication'
+    });
+  }
+};
 
-app.use(express.static(path.join(__dirname, 'client/build')));
+// PUBLIC ROUTE: Health check
+app.get('/health', (req, res) => {
+  res.status(200).json({ 
+    status: 'ok', 
+    message: 'API is running',
+    timestamp: new Date().toISOString()
+  });
+});
+
+// PUBLIC ROUTE: API test
+app.get('/api/test', (req, res) => {
+  res.status(200).json({
+    success: true,
+    message: 'API is working properly',
+    data: {
+      serverTime: new Date().toISOString(),
+      environment: process.env.NODE_ENV || 'development'
+    }
+  });
+});
 
 // Basic route to check if server is running
 app.get('/', (req, res) => {
   res.send('Resume Builder API is running');
 });
 
+// Use your resume data routes - we'll add auth inside the route file
+app.use('/api/resume-data', resumeDataRoutes);
 
 // Create temp directory for LaTeX files
 const tempDir = path.join(__dirname, 'temp');
 fs.ensureDirSync(tempDir);
 
 function cleanJsonResponse(response) {
-  // Remove markdown code blocks and any other non-JSON formatting
   return response
-    .replace(/```(json|javascript)?/g, '') // Remove markdown code markers
-    .replace(/^\s*[\r\n]/gm, '')          // Remove extra newlines
-    .trim();                              // Trim whitespace
+    .replace(/```(json|javascript)?/g, '')
+    .replace(/^\s*[\r\n]/gm, '')
+    .trim();
 }
 
 // AI enhancement endpoints
-app.post('/enhance/skills', clerkMiddleware(),async (req, res) => {
+app.post('/enhance/skills', requireAuth,async (req, res) => {
   try {
     const { skills, jobDescription } = req.body;
     
@@ -128,7 +202,7 @@ Expected format example: JavaScript, React, Node.js, Express, MongoDB, RESTful A
   }
 });
 
-app.post('/enhance/projects', clerkMiddleware(), async (req, res) => {
+app.post('/enhance/projects', async (req, res) => {
   try {
     const { projects, jobDescription } = req.body;
     
@@ -198,7 +272,7 @@ Expected format:
 
 // Replace the entire enhance/experience endpoint with this:
 
-app.post('/enhance/experience', clerkMiddleware(), async (req, res) => {
+app.post('/enhance/experience',  async (req, res) => {
   try {
     const { experienceData, jobDescription } = req.body;
 
@@ -275,7 +349,7 @@ Expected format:
   }
 });
 
-app.post('/enhance/certifications', clerkMiddleware(), async (req, res) => {
+app.post('/enhance/certifications',  async (req, res) => {
   try {
     const { certifications, jobDescription } = req.body;
     
@@ -343,7 +417,7 @@ Expected format:
   }
 });
 
-app.post('/enhance/achievements', clerkMiddleware(), async (req, res) => {
+app.post('/enhance/achievements',  async (req, res) => {
   try {
     const { achievements, jobDescription } = req.body;
     
@@ -410,7 +484,7 @@ Expected format:
   }
 });
 
-app.post('/enhance/extracurricular', clerkMiddleware(), async (req, res) => {
+app.post('/enhance/extracurricular',  async (req, res) => {
   try {
     const { activities, jobDescription } = req.body;
     
@@ -480,7 +554,7 @@ Expected format:
 });
 
 // Unified route to enhance all resume sections at once
-app.post('/enhance/resume', clerkMiddleware(), async (req, res) => {
+app.post('/enhance/resume',  async (req, res) => {
   try {
     const { formData,jobDescription } = req.body;
     
@@ -655,7 +729,7 @@ async function callAI(prompt, isJSON = false) {
 
 
 // Main route for generating the PDF
-app.post('/generate-resume', clerkMiddleware(), async (req, res) => {
+app.post('/generate-resume',  async (req, res) => {
   try {
     const { originalData } = req.body;
     

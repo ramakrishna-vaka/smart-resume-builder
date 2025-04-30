@@ -10,10 +10,10 @@ import '../../styles/ResumeNavHeader.css';
 import '../../styles/ResumeBuilder.css';
 import { initStickyPreviewHandler } from '../../utils/stickyPreviewHandler';
 import { formatFormDataForApi } from '../../utils/dataFormatter';
+import useApiService from '../../services/apiService';
 
 const ResumeBuilder = () => {
-
-  const API_URL = 'https://smart-resume-builder-backend.onrender.com';
+  const apiService = useApiService();
 
   useEffect(() => {
     // Initialize sticky preview handler
@@ -110,12 +110,14 @@ const ResumeBuilder = () => {
     setIsEnhancing(true);
     setSuccessMessage('');
     setErrorMessage('');
+    
     try {
       // Format data to match server expectations
       const formattedData = {
         ...formData,
         skills: formData.skills.map((skill) => typeof skill === 'object' ? skill.value : skill),
       };
+      
       const jobDescription = sessionStorage.getItem('jobDescription') || '';
       if (!jobDescription) {
         setErrorMessage('Please provide a job description for enhancement');
@@ -123,159 +125,124 @@ const ResumeBuilder = () => {
         return;
       }
       
-      const enhancementResponse = await fetch(`${API_URL}/enhance/resume`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ formData: formattedData, jobDescription }),
-      });
+      const enhancementResult = await apiService.enhanceResume(formattedData, jobDescription);
+      const enhancedData = enhancementResult.enhancedData || {};
       
-      if (enhancementResponse.ok) {
-        const enhancementResult = await enhancementResponse.json();
-        const enhancedData = enhancementResult.enhancedData || {};
-        
-        // Start with our current form data
-        const mergedData = { ...formData };
-        
-        // Skills - enhance if dirty or not previously enhanced
-        if (isDirty.skills && Array.isArray(enhancedData.enhancedSkills)) {
-          mergedData.skills = enhancedData.enhancedSkills.map(skill => 
-            typeof skill === 'string' ? { value: skill, label: skill } : skill
-          );
-        }
-        
-        // Projects - needs more comprehensive handling
-        if (isDirty.projects && Array.isArray(enhancedData.enhancedProjects)) {
-          mergedData.projects = enhancedData.enhancedProjects.map(project => ({
-            projectName: project.name || "",
-            projectTechStack: project.techStack || "",
-            projectDescription: project.bullets ? project.bullets.join('\n• ') : ""
-          }));
-        }
-        
-        // Experience - enhance individual fields if they are dirty
-        if (isDirty.experiences && Array.isArray(enhancedData.enhancedExperiences)) {
-          const enhancedExperiencesFormatted = enhancedData.enhancedExperiences.map(exp => ({
-            company: exp.company || '',
-            role: exp.role || '',
-            period: exp.period || '',
-            techStack: exp.techStack || '',
-            description: exp.bullets ? '• ' + exp.bullets.join('\n• ') : ''
-          }));
-          
-          if (enhancedExperiencesFormatted.length > 0) {
-            mergedData.experiences = enhancedExperiencesFormatted;
-          }
-        }
-        
-        // Certifications - enhance if dirty
-if (isDirty.certifications && Array.isArray(enhancedData.enhancedCertifications)) {
-  mergedData.certifications = enhancedData.enhancedCertifications.map(cert => ({
-    name: cert.name || '',
-    issuer: cert.issuer || '',
-    date: cert.date || '',
-    link: cert.link || '',
-    description: cert.description || ''
-  }));
-}
-
-// Achievements - enhance if dirty
-if (isDirty.achievements && Array.isArray(enhancedData.enhancedAchievements)) {
-  mergedData.achievements = enhancedData.enhancedAchievements.map(achievement => ({
-    title: achievement.title || '',
-    year: achievement.year || '',
-    organization: achievement.organization || '',
-    description: achievement.description || ''
-  }));
-}
-
-// Extracurricular Activities - enhance if dirty
-if (isDirty.extracurricularActivities && Array.isArray(enhancedData.enhancedActivities)) {
-  mergedData.extracurricularActivities = enhancedData.enhancedActivities.map(activity => ({
-    name: activity.name || '',
-    role: activity.role || '',
-    organization: activity.organization || '',
-    period: activity.period || '',
-    description: activity.description || ''
-  }));
-}
-        
-        // Update form data with source='server' to avoid marking these changes as dirty
-        handleFormDataChange(mergedData, 'server');
-        setSuccessMessage('Resume content has been enhanced!');
-        
-      } else {
-        throw new Error("Enhancement request failed");
+      // Start with our current form data
+      const mergedData = { ...formData };
+      
+      // Skills - enhance if dirty or not previously enhanced
+      if (isDirty.skills && Array.isArray(enhancedData.enhancedSkills)) {
+        mergedData.skills = enhancedData.enhancedSkills.map(skill => 
+          typeof skill === 'string' ? { value: skill, label: skill } : skill
+        );
       }
+      
+      // Projects - needs more comprehensive handling
+      if (isDirty.projects && Array.isArray(enhancedData.enhancedProjects)) {
+        mergedData.projects = enhancedData.enhancedProjects.map(project => ({
+          projectName: project.name || "",
+          projectTechStack: project.techStack || "",
+          projectDescription: project.bullets ? project.bullets.join('\n• ') : ""
+        }));
+      }
+      
+      // Experience - enhance individual fields if they are dirty
+      if (isDirty.experiences && Array.isArray(enhancedData.enhancedExperiences)) {
+        const enhancedExperiencesFormatted = enhancedData.enhancedExperiences.map(exp => ({
+          company: exp.company || '',
+          role: exp.role || '',
+          period: exp.period || '',
+          techStack: exp.techStack || '',
+          description: exp.bullets ? '• ' + exp.bullets.join('\n• ') : ''
+        }));
+        
+        if (enhancedExperiencesFormatted.length > 0) {
+          mergedData.experiences = enhancedExperiencesFormatted;
+        }
+      }
+      
+      // Certifications - enhance if dirty
+      if (isDirty.certifications && Array.isArray(enhancedData.enhancedCertifications)) {
+        mergedData.certifications = enhancedData.enhancedCertifications.map(cert => ({
+          name: cert.name || '',
+          issuer: cert.issuer || '',
+          date: cert.date || '',
+          link: cert.link || '',
+          description: cert.description || ''
+        }));
+      }
+
+      // Achievements - enhance if dirty
+      if (isDirty.achievements && Array.isArray(enhancedData.enhancedAchievements)) {
+        mergedData.achievements = enhancedData.enhancedAchievements.map(achievement => ({
+          title: achievement.title || '',
+          year: achievement.year || '',
+          organization: achievement.organization || '',
+          description: achievement.description || ''
+        }));
+      }
+
+      // Extracurricular Activities - enhance if dirty
+      if (isDirty.extracurricularActivities && Array.isArray(enhancedData.enhancedActivities)) {
+        mergedData.extracurricularActivities = enhancedData.enhancedActivities.map(activity => ({
+          name: activity.name || '',
+          role: activity.role || '',
+          organization: activity.organization || '',
+          period: activity.period || '',
+          description: activity.description || ''
+        }));
+      }
+      
+      // Update form data with source='server' to avoid marking these changes as dirty
+      handleFormDataChange(mergedData, 'server');
+      setSuccessMessage('Resume content has been enhanced!');
+      
     } catch (error) {
       console.error("Error during enhancement:", error);
-      setErrorMessage('Failed to enhance resume content. Please try again.');
+      setErrorMessage(`Failed to enhance resume content: ${error.message}`);
     } finally {
       setIsEnhancing(false);
     }
   };
   
-  // Updated loadPreviousData function with better error handling
-const loadPreviousData = async () => {
-  try {
-    setSuccessMessage('');
-    setErrorMessage('');
-    
-    // Log request for debugging
-    console.log('Fetching resume data from:', `${API_URL}/api/resume-data/fetch`);
-    
-    const response = await fetch(`${API_URL}/api/resume-data/fetch`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json' // Explicitly request JSON response
-      },
-      credentials: 'include' // Ensure cookies are sent
-    });
-    
-    // Check if response is OK before processing
-    if (!response.ok) {
-      const text = await response.text();
-      console.error('Server returned non-OK response:', response.status, text);
-      throw new Error(`Server returned ${response.status}: ${text.substring(0, 100)}...`);
-    }
-    
-    // Check content type to provide better error messages
-    const contentType = response.headers.get('content-type');
-    if (!contentType || !contentType.includes('application/json')) {
-      const text = await response.text();
-      console.error('Expected JSON but got:', contentType, text.substring(0, 100));
-      throw new Error(`Expected JSON response but got ${contentType}`);
-    }
-    
-    const responseData = await response.json();
-    console.log('Resume data response:', responseData);
-    
-    if (responseData.success && responseData.data) {
-      // Convert skills back to the format expected by the form (with value/label)
-      const formattedData = {
-        ...responseData.data,
-        skills: Array.isArray(responseData.data.skills) 
-          ? responseData.data.skills.map(skill => typeof skill === 'string' 
-              ? { value: skill, label: skill } 
-              : skill)
-          : []
-      };
+  const loadPreviousData = async () => {
+    try {
+      setSuccessMessage('');
+      setErrorMessage('');
+      setIsLoading(true);
       
-      // Set form data with server source to avoid marking all fields as dirty
-      setFormData(formattedData);
-      // Reset dirty state since we're loading from saved data
-      setIsDirty({});
-      setSuccessMessage('Previous resume data loaded successfully!');
-    } else {
-      setErrorMessage(responseData.message || 'No previous resume data found.');
+      console.log('Fetching previous resume data...');
+      
+      const responseData = await apiService.fetchResumeData();
+      console.log('Resume data response:', responseData);
+      
+      if (responseData.success && responseData.data) {
+        // Convert skills back to the format expected by the form (with value/label)
+        const formattedData = {
+          ...responseData.data,
+          skills: Array.isArray(responseData.data.skills) 
+            ? responseData.data.skills.map(skill => typeof skill === 'string' 
+                ? { value: skill, label: skill } 
+                : skill)
+            : []
+        };
+        
+        // Set form data with server source to avoid marking all fields as dirty
+        setFormData(formattedData);
+        // Reset dirty state since we're loading from saved data
+        setIsDirty({});
+        setSuccessMessage('Previous resume data loaded successfully!');
+      } else {
+        setErrorMessage(responseData.message || 'No previous resume data found.');
+      }
+    } catch (error) {
+      console.error('Error loading previous data:', error);
+      setErrorMessage(`Failed to load previous data: ${error.message}`);
+    } finally {
+      setIsLoading(false);
     }
-  } catch (error) {
-    console.error('Error loading previous data:', error);
-    setErrorMessage(`Failed to load previous data: ${error.message}`);
-  }
-};
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -284,6 +251,7 @@ const loadPreviousData = async () => {
     // Clear any previous success/error messages when submitting
     setSuccessMessage('');
     setErrorMessage('');
+    
     try {
       // Validate required fields
       if (!formData.firstName || !formData.lastName) {
@@ -300,46 +268,21 @@ const loadPreviousData = async () => {
       // Step 1: Save data to MongoDB if requested by the user
       if (saveDataForFuture) {
         try {
-          const saveResponse = await fetch(`${API_URL}/api/resume-data/save`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            credentials: 'include', 
-            body: JSON.stringify({ resumeData: formattedData })
-          });
-          
-          if (!saveResponse.ok) {
-            console.error('Failed to save resume data');
-          } else {
-            console.log('Resume data saved successfully');
-          }
+          await apiService.saveResumeData(formattedData);
+          console.log('Resume data saved successfully');
         } catch (saveError) {
           console.error('Error saving resume data:', saveError);
           // Continue with PDF generation even if saving fails
         }
       }
       
-      // Step 2: Generate the Resume PDF - Now just sending the formatted data
-      const response = await fetch(`${API_URL}/generate-resume`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ originalData: formattedData })
-      });
+      // Step 2: Generate the Resume PDF
+      const response = await apiService.generateResume(formattedData);
       
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error('Server error details:', errorText);
-        throw new Error(`Failed to generate resume: ${response.statusText}`);
-      }
-      
-      // Process the response
-      const contentType = response.headers.get('Content-Type');
-      if (contentType && contentType.includes('application/pdf')) {
-        // Handle PDF download
-        const blob = await response.blob();
+      // Handle different response types
+      if (response.blob && response.contentType.includes('application/pdf')) {
+        // Handle PDF blob response
+        const blob = response.blob;
         const url = window.URL.createObjectURL(blob);
         
         // Set the PDF URL for display/iframe if needed
@@ -356,16 +299,13 @@ const loadPreviousData = async () => {
         
         setResumeGenerated(true);
         setSuccessMessage('Resume generated successfully!');
+      } else if (response.pdfUrl) {
+        // Handle JSON response with PDF URL
+        setPdfUrl(response.pdfUrl);
+        setResumeGenerated(true);
+        setSuccessMessage('Resume generated successfully!');
       } else {
-        // Handle JSON response
-        const data = await response.json();
-        
-        // If the server returns the PDF URL in JSON instead
-        if (data.pdfUrl) {
-          setPdfUrl(data.pdfUrl);
-          setResumeGenerated(true);
-          setSuccessMessage('Resume generated successfully!');
-        }
+        throw new Error('No PDF was returned from the server');
       }
     } catch (error) {
       console.error('Error generating resume:', error);
