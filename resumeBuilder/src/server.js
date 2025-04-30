@@ -12,12 +12,9 @@ import dotenv from 'dotenv';
 dotenv.config(); 
 
 // Import Clerk properly - use your exact Clerk package imports
-import { Clerk } from '@clerk/clerk-sdk-node';
+import clerk from '@clerk/clerk-sdk-node';
 
-// Initialize Clerk with your secret key
-const clerk = new Clerk({
-  secretKey: process.env.CLERK_SECRET_KEY || 'sk_test_MgZVkNNnyGngblhBigvVsBRKbi5ptiUH36T7OnbEWb'
-});
+clerk.setClerkApiKey(process.env.CLERK_SECRET_KEY || 'sk_test_MgZVkNNnyGngblhBigvVsBRKbi5ptiUH36T7OnbEWb');
 
 import resumeDataRoutes from './routes/resumeData.js';
 

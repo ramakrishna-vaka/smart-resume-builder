@@ -1,13 +1,11 @@
 import express from 'express';
 import ResumeData from '../models/ResumeData.js';
-import { Clerk } from '@clerk/clerk-sdk-node';
+import clerk from '@clerk/clerk-sdk-node';
 
 const router = express.Router();
 
 // Initialize Clerk with your secret key
-const clerk = new Clerk({
-  secretKey: process.env.CLERK_SECRET_KEY || 'sk_test_MgZVkNNnyGngblhBigvVsBRKbi5ptiUH36T7OnbEWb'
-});
+clerk.setClerkApiKey(process.env.CLERK_SECRET_KEY || 'sk_test_MgZVkNNnyGngblhBigvVsBRKbi5ptiUH36T7OnbEWb');
 
 // Middleware to extract and verify the JWT token
 const requireAuth = async (req, res, next) => {
