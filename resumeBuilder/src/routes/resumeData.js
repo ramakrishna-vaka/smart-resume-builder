@@ -1,64 +1,38 @@
 import express from 'express';
 import ResumeData from '../models/ResumeData.js';
-const clerk = require('@clerk/clerk-sdk-node');
+import { verifyToken } from '@clerk/backend';
 import dotenv from 'dotenv';
 dotenv.config();
 
 const router = express.Router();
 
 // Initialize Clerk with your secret key
-clerk.setClerkApiKey(process.env.CLERK_SECRET_KEY || 'sk_test_MgZVkNNnyGngblhBigvVsBRKbi5ptiUH36T7OnbEWb');
 
 // Middleware to extract and verify the JWT token
 const requireAuth = async (req, res, next) => {
   try {
-    // Get the Authorization header
     const authHeader = req.headers.authorization;
-    
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return res.status(401).json({ 
-        success: false, 
-        error: 'Authentication required', 
-        message: 'No valid authorization token provided'
-      });
+
+    if (!authHeader?.startsWith('Bearer ')) {
+      return res.status(401).json({ error: 'No authorization token provided' });
     }
-    
-    // Extract the token
+
     const token = authHeader.split(' ')[1];
-    
-    if (!token) {
-      return res.status(401).json({ 
-        success: false, 
-        error: 'Authentication required',
-        message: 'No token found in authorization header'
-      });
-    }
-    
+
     try {
-      // Verify the token with Clerk
-      const verifiedToken = await clerk.verifyToken(token);
-      
-      // Set the user ID in the request object
-      req.auth = {
-        userId: verifiedToken.sub
-      };
-      
-      next();
-    } catch (tokenError) {
-      console.error('Token verification error:', tokenError);
-      return res.status(401).json({ 
-        success: false, 
-        error: 'Authentication failed',
-        message: 'Invalid or expired token'
+      const payload = await verifyToken(token, {
+        secretKey: process.env.CLERK_SECRET_KEY
       });
+
+      req.auth = { userId: payload.sub };
+      next();
+    } catch (err) {
+      console.error('Token verification failed:', err);
+      return res.status(401).json({ error: 'Invalid or expired token' });
     }
-  } catch (error) {
-    console.error('Auth middleware error:', error);
-    return res.status(500).json({ 
-      success: false, 
-      error: 'Server error',
-      message: 'An error occurred during authentication'
-    });
+  } catch (err) {
+    console.error('Authentication error:', err);
+    res.status(500).json({ error: 'Server error during authentication' });
   }
 };
 
