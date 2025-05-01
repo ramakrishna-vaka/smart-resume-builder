@@ -103,6 +103,20 @@ router.post('/save', requireAuth, async (req, res) => {
 // PROTECTED ROUTE: Get resume data for the authenticated user
 router.get('/fetch', requireAuth, async (req, res) => {
   try {
+    // Add explicit CORS headers for this critical endpoint
+    const origin = req.headers.origin;
+    const allowedOrigins = [
+      'https://smart-resume-builder-five.vercel.app', 
+      'http://localhost:5173'
+    ];
+    
+    if (allowedOrigins.includes(origin)) {
+      res.header('Access-Control-Allow-Origin', origin);
+      res.header('Access-Control-Allow-Credentials', 'true');
+      res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+      res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+    }
+
     const { userId } = req.auth;
     
     if (!userId) {
@@ -134,7 +148,6 @@ router.get('/fetch', requireAuth, async (req, res) => {
     });
   }
 });
-
 // PUBLIC ROUTE: Get a sample resume data (useful for testing)
 router.get('/sample', (req, res) => {
   // Sample resume data for testing purposes
