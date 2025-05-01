@@ -1,0 +1,21 @@
+services:
+  - type: web
+    name: resume-builder
+    env: docker
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    plan: starter
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: OPENROUTER_API_KEY
+        sync: false # This requires manual setting in Render dashboard
+      - key: PORT
+        value: 3000
+      - key: MONGODB_URI
+        sync: false # This requires manual setting in Render dashboard
+    disk:
+      name: temp-storage
+      mountPath: /usr/src/app/temp
+      sizeGB: 1

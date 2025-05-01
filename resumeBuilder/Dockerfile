@@ -1,6 +1,6 @@
 FROM node:20-slim
 
-# Install essential packages and TeX Live
+# Install essential packages and TeX Live with better organization
 RUN apt-get update && apt-get install -y \
     texlive-latex-base \
     texlive-fonts-recommended \
@@ -12,15 +12,18 @@ RUN apt-get update && apt-get install -y \
 # Create app directory
 WORKDIR /usr/src/app
 
-# Install app dependencies
+# Install app dependencies first (for better caching)
 COPY package*.json ./
 RUN npm install
 
 # Copy app source
 COPY . .
 
+# Create temp directory with proper permissions
+RUN mkdir -p /usr/src/app/temp && chmod 777 /usr/src/app/temp
+
 # Expose port for the server
 EXPOSE 3000
 
-# Update this line to point to the correct location of server.js
+# Start the application
 CMD ["node", "src/server.js"]
