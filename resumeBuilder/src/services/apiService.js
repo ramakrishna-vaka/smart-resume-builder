@@ -8,7 +8,7 @@ const useApiService = () => {
   const isUsingClerk = !!auth;
   
   // Base API URL
-  const API_BASE_URL = 'https://smart-resume-builder-backend.onrender.com';
+  const API_BASE_URL = 'https://smart-resume-builder-docker-backend.onrender.com';
 
   // Helper for API requests that need authentication
   const authenticatedRequest = async (endpoint, options = {}) => {
