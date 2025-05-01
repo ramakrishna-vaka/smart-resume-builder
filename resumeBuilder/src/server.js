@@ -174,7 +174,7 @@ Expected format example: JavaScript, React, Node.js, Express, MongoDB, RESTful A
   }
 });
 
-app.post('/enhance/projects', async (req, res) => {
+app.post('/enhance/projects', requireAuth,async (req, res) => {
   try {
     const { projects, jobDescription } = req.body;
     
@@ -244,7 +244,7 @@ Expected format:
 
 // Replace the entire enhance/experience endpoint with this:
 
-app.post('/enhance/experience',  async (req, res) => {
+app.post('/enhance/experience', requireAuth,  async (req, res) => {
   try {
     const { experienceData, jobDescription } = req.body;
 
@@ -321,7 +321,7 @@ Expected format:
   }
 });
 
-app.post('/enhance/certifications',  async (req, res) => {
+app.post('/enhance/certifications', requireAuth, async (req, res) => {
   try {
     const { certifications, jobDescription } = req.body;
     
@@ -389,7 +389,7 @@ Expected format:
   }
 });
 
-app.post('/enhance/achievements',  async (req, res) => {
+app.post('/enhance/achievements', requireAuth, async (req, res) => {
   try {
     const { achievements, jobDescription } = req.body;
     
@@ -456,7 +456,7 @@ Expected format:
   }
 });
 
-app.post('/enhance/extracurricular',  async (req, res) => {
+app.post('/enhance/extracurricular', requireAuth, async (req, res) => {
   try {
     const { activities, jobDescription } = req.body;
     
@@ -526,7 +526,7 @@ Expected format:
 });
 
 // Unified route to enhance all resume sections at once
-app.post('/enhance/resume',  async (req, res) => {
+app.post('/enhance/resume', requireAuth, async (req, res) => {
   try {
     const { formData,jobDescription } = req.body;
     
@@ -701,7 +701,7 @@ async function callAI(prompt, isJSON = false) {
 
 
 // Main route for generating the PDF
-app.post('/generate-resume',  async (req, res) => {
+app.post('/generate-resume', requireAuth,  async (req, res) => {
   try {
     const { originalData } = req.body;
     

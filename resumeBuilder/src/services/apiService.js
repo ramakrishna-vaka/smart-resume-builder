@@ -110,18 +110,18 @@ const useApiService = () => {
     
     fetchResumeData: () => authenticatedRequest('/api/resume-data/fetch'),
     
-    generateResume: (formData) => publicRequest('/generate-resume', {
+    generateResume: (formData) => authenticatedRequest('/generate-resume', {
       method: 'POST',
       body: JSON.stringify({ originalData: formData })
     }),
     
     // Enhancement operations
-    enhanceResume: (formData, jobDescription) => publicRequest('/enhance/resume', {
+    enhanceResume: (formData, jobDescription) => authenticatedRequest('/enhance/resume', {
       method: 'POST',
       body: JSON.stringify({ formData, jobDescription })
     }),
     
-    enhanceSkills: (skills, jobDescription) => publicRequest('/enhance/skills', {
+    enhanceSkills: (skills, jobDescription) => authenticatedRequest('/enhance/skills', {
       method: 'POST',
       body: JSON.stringify({ skills, jobDescription })
     }),
