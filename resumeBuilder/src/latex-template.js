@@ -13,7 +13,7 @@ export function generateLaTeX(formData) {
     const professionalTitle = formData.professionalTitle;
     
     // Get introduction text
-    const introduction = formData.introduction || 'A motivated professional with experience in the field.';
+    const introduction = formData.introduction || '';
     
     // Get education info
     const graduationCollegeName = formData.graduationCollegeName || 'University';
