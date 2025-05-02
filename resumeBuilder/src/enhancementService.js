@@ -1,5 +1,6 @@
 // AI enhancement service module
-
+import dotenv from 'dotenv';
+dotenv.config();
 // Utility function to clean JSON responses from AI
 function cleanJsonResponse(response) {
     // Remove any non-JSON content that might be in the response
