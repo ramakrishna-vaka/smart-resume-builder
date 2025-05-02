@@ -37,7 +37,7 @@ function cleanJsonResponse(response) {
       const aiResponse = await fetch("https://openrouter.ai/api/v1/chat/completions", {
         method: "POST",
         headers: {
-          "Authorization": `Bearer ${process.env.OPENROUTER_API_KEY}`,
+          "Authorization": `Bearer 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`,
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
