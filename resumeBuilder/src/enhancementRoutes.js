@@ -17,25 +17,52 @@ const asyncHandler = fn => (req, res, next) => {
     });
 };
 
+const errorTracker = {
+    errors: [],
+    addError(route, error) {
+      this.errors.push({
+        route,
+        message: error.message,
+        timestamp: new Date().toISOString()
+      });
+      // Keep only last 100 errors
+      if (this.errors.length > 100) {
+        this.errors.shift();
+      }
+    },
+    getRecentErrors() {
+      return this.errors.slice(-20); // Return last 20 errors
+    }
+  };
 // AI enhancement endpoint for introduction
 router.post('/introduction', asyncHandler(async (req, res) => {
-  const { introduction, jobDescription } = req.body;
-  
-  const enhancedIntroduction = await enhancementServices.enhanceIntroduction(
-    introduction,
-    jobDescription
-  );
-  
-  res.json({ 
-    enhancedIntroduction,
-    success: true
-  });
-}));
+    const { introduction, jobDescription } = req.body;
+    
+    try {
+      const enhancedIntroduction = await enhancementServices.enhanceIntroduction(
+        introduction,
+        jobDescription
+      );
+      
+      res.json({ 
+        enhancedIntroduction,
+        success: true
+      });
+    } catch (error) {
+      errorTracker.addError('introduction', error);
+      res.status(500).json({
+        error: error.message,
+        success: false,
+        originalContent: introduction,
+        message: 'Failed to enhance introduction, returning original'
+      });
+    }
+  }));
 
 // AI enhancement endpoint for professional title
 router.post('/title', asyncHandler(async (req, res) => {
   const { title, jobDescription } = req.body;
-  
+  try{
   const enhancedTitle = await enhancementServices.enhanceTitle(
     title,
     jobDescription
@@ -45,6 +72,15 @@ router.post('/title', asyncHandler(async (req, res) => {
     enhancedTitle,
     success: true
   });
+}catch (error) {
+    errorTracker.addError('title', error);
+    res.status(500).json({
+        error: error.message,
+        success: false,
+        originalContent: title,
+        message: 'Failed to enhance title, returning original'
+    });
+}
 }));
 
 // AI enhancement endpoint for skills
@@ -83,7 +119,7 @@ router.post('/experience', asyncHandler(async (req, res) => {
   
   const experiences = experienceData && experienceData.experiences ? 
     experienceData.experiences : [];
-  
+  try {
   const enhancedExperiences = await enhancementServices.enhanceExperience(
     experiences,
     jobDescription
@@ -93,6 +129,16 @@ router.post('/experience', asyncHandler(async (req, res) => {
     enhancedExperiences,
     success: true
   });
+  }
+  catch (error) {
+    errorTracker.addError('experience', error);
+    res.status(500).json({
+        error: error.message,
+        success: false,
+        originalContent: experienceData,
+        message: 'Failed to enhance experience, returning original'
+    });
+  }
 }));
 
 // AI enhancement endpoint for certifications
@@ -156,7 +202,8 @@ router.post('/resume', asyncHandler(async (req, res) => {
   }
   console.log('Calling enhanceResume service...');
   // Process all sections at once using the service
-  const enhancedData = await enhancementServices.enhanceResume(
+  try{
+    const enhancedData = await enhancementServices.enhanceResume(
     formData,
     jobDescription
   );
@@ -166,6 +213,16 @@ router.post('/resume', asyncHandler(async (req, res) => {
     message: 'Resume enhanced successfully',
     success: true
   });
+  }
+  catch (error) {
+    errorTracker.addError('resume', error);
+    res.status(500).json({
+        error: error.message,
+        success: false,
+        originalContent: formData,
+        message: 'Failed to enhance resume, returning original'
+    });
+  }
 }));
 
 export default router;
