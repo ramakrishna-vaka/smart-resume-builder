@@ -142,8 +142,10 @@ router.post('/extracurricular', asyncHandler(async (req, res) => {
 
 // Unified route to enhance all resume sections at once
 router.post('/resume', asyncHandler(async (req, res) => {
+    console.log('Resume enhancement request received');
   const { formData, jobDescription } = req.body;
-  
+  console.log('Form data sections available:', Object.keys(formData || {}));
+  console.log('Job description:', jobDescription);
   // Validate required data
   if (!formData || !jobDescription) {
     return res.status(400).json({ 
@@ -152,7 +154,7 @@ router.post('/resume', asyncHandler(async (req, res) => {
       success: false
     });
   }
-  
+  console.log('Calling enhanceResume service...');
   // Process all sections at once using the service
   const enhancedData = await enhancementServices.enhanceResume(
     formData,

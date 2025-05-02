@@ -17,7 +17,6 @@ function cleanJsonResponse(response) {
     if (cleanedResponse.endsWith('```')) {
       cleanedResponse = cleanedResponse.substring(0, cleanedResponse.length - 3);
     }
-    
     return cleanedResponse.trim();
   }
   
@@ -530,11 +529,13 @@ function cleanJsonResponse(response) {
     
     // Full resume enhancement
     async enhanceResume(formData, jobDescription) {
+        console.log('enhanceResume service called');
       if (!formData || !jobDescription) {
         throw new Error('Job description is required for AI enhancement');
       }
       
       try {
+        console.log('Starting parallel enhancement of all sections');
         // Process all sections in parallel for efficiency using enhancementServices instead of HTTP calls
         const [
           enhancedIntroduction,
