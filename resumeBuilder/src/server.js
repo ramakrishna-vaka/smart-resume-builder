@@ -149,6 +149,86 @@ function cleanJsonResponse(response) {
 }
 
 // AI enhancement endpoints
+
+app.post('/enhance/introduction', requireAuth, async (req, res) => {
+  try {
+    const { introduction, jobDescription } = req.body;
+    
+    if (!jobDescription || !introduction) {
+      return res.json({ enhancedIntroduction: introduction }); // Return original if no job description
+    }
+    
+    const prompt = `
+Job Description:
+${jobDescription}
+
+Candidate's Current Introduction:
+${introduction}
+
+Based on this job description, enhance the candidate's introduction:
+1. Maintain the core personal details and tone from the original introduction
+2. Highlight skills and experiences that align with the job description
+3. Keep approximately the same length as the original (1-2 paragraphs)
+4. Use professional language but maintain the candidate's original voice
+5. Ensure the enhanced introduction sounds natural and authentic
+6. Return ONLY the enhanced introduction text with no additional commentary
+
+Important: Do NOT invent new experiences or qualifications not mentioned in the original introduction.
+`;
+
+    const aiResponse = await callAI(prompt);
+    
+    if (!aiResponse) {
+      return res.json({ enhancedIntroduction: introduction });
+    }
+    
+    res.json({ enhancedIntroduction: aiResponse });
+    
+  } catch (error) {
+    console.error('Error enhancing introduction:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// New endpoint for enhancing professional title
+app.post('/enhance/title', requireAuth, async (req, res) => {
+  try {
+    const { title, jobDescription } = req.body;
+    
+    if (!jobDescription || !title) {
+      return res.json({ enhancedTitle: title }); // Return original if no job description
+    }
+    
+    const prompt = `
+Job Description:
+${jobDescription}
+
+Candidate's Current Professional Title:
+${title}
+
+Based on this job description, enhance the professional title:
+1. Maintain core elements from the original title
+2. Align it better with the job being applied for IF appropriate
+3. Keep it concise and professional (maximum 3-5 words)
+4. Return ONLY the enhanced title with no additional commentary
+
+Important: The enhanced title must remain realistic and closely related to the original. Do not create an entirely different title.
+`;
+
+    const aiResponse = await callAI(prompt);
+    
+    if (!aiResponse) {
+      return res.json({ enhancedTitle: title });
+    }
+    
+    res.json({ enhancedTitle: aiResponse });
+    
+  } catch (error) {
+    console.error('Error enhancing title:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
 app.post('/enhance/skills', requireAuth,async (req, res) => {
   try {
     const { skills, jobDescription } = req.body;
@@ -169,9 +249,9 @@ Candidate's Current Skills:
 ${userSkills.join(', ')}
 
 Based on this job description, perform the following tasks:
-1. Keep all the original skills the candidate listed
-2. Extract important technical skills from the job description that aren't in the candidate's list
-3. Return a comprehensive list of skills relevant to this job (keeping the original skills + adding relevant ones from the job description)
+1. Keep ALL the original skills the candidate listed exactly as they are
+2. Extract 3-5 important technical skills from the job description that aren't in the candidate's list
+3. Only add skills that are highly relevant to the job and that the candidate could reasonably have
 4. Format your response as a comma-separated list of skills only, with no explanation or other text
 
 Expected format example: JavaScript, React, Node.js, Express, MongoDB, RESTful APIs, Git, AWS
@@ -217,16 +297,20 @@ Description: ${p.projectDescription || ''}
 `).join('\n')}
 
 Based on this job description, enhance the projects to better align with the job requirements:
-1. Focus on projects that are most relevant to the job description
-2. For each project, provide an enhanced name, tech stack, and 2-3 bullet points highlighting achievements and skills relevant to the job
+1.Keep the original project names but make minor improvements if needed
+2. Focus on projects that are most relevant to the job description
 3. Prioritize the most relevant projects first
 4. If there are more than 3 projects, only include the most relevant ones
-5. Return the results in a structured JSON format
+4.Keep core technologies in the tech stack but add 1-2 relevant technologies if applicable
+5. For each project, provide EXACTLY 3 bullet points highlighting achievements and skills relevant to the job
+6. Make bullet points concise (15-20 words each)
+7. Use quantifiable metrics and action verbs where possible
+8. Return the results in a structured JSON format
 
 Expected format:
 [
   {
-    "name": "Enhanced Project Name",
+    "name": "Enhanced Project Name (keeping strong similarity to original)",
     "techStack": "Enhanced Tech Stack",
     "relevanceScore": 85,
     "bullets": [
@@ -265,8 +349,6 @@ Expected format:
   }
 });
 
-// Replace the entire enhance/experience endpoint with this:
-
 app.post('/enhance/experience', requireAuth,  async (req, res) => {
   try {
     const { experienceData, jobDescription } = req.body;
@@ -293,9 +375,9 @@ Tech Stack: ${experience.techStack || ''}
 Description: ${experience.description || ''}
 
 Based on this job description, enhance the experience to better align with the job requirements:
-1. Keep the original role, company, and period
-2. Enhance the tech stack to include relevant technologies (if appropriate)
-3. Create 3-4 impactful bullet points that highlight achievements and responsibilities that match the job requirements
+1. DO NOT CHANGE the original company name, role title, or period
+2. Enhance the tech stack to include relevant technologies (ONLY if appropriate)
+3.Create EXACTLY 3-4 impactful bullet points that highlight achievements and responsibilities matching the job requirements
 4. Include metrics and results where possible
 5. Use action verbs and quantifiable achievements
 6. Return the results in a structured JSON format
@@ -366,7 +448,7 @@ Description: ${cert.description || ''}
 
 Based on this job description, enhance the certifications to better align with the job requirements:
 1. Keep the original certification names, issuers, and dates
-2. Add or enhance descriptions to highlight relevance to the job 
+2. Add or enhance descriptions to be BRIEF (1-2 sentences maximum) and highlight relevance to the job 
 3. Prioritize the certifications most relevant to the position
 4. Return the results in a structured JSON format
 
@@ -434,7 +516,7 @@ Description: ${ach.description || ''}
 
 Based on this job description, enhance the achievements to better align with the job requirements:
 1. Keep the original achievement titles, organizations, and years
-2. Enhance descriptions to quantify results and highlight relevance
+2. Add or enhance descriptions to be BRIEF (1-2 sentences maximum) and highlight relevance to the job
 3. Prioritize achievements most relevant to the position
 4. Return the results in a structured JSON format
 
@@ -502,7 +584,7 @@ Description: ${act.description || ''}
 
 Based on this job description, enhance the extracurricular activities to better align with the job requirements:
 1. Keep the original activity names, roles, organizations, and periods
-2. Enhance descriptions to highlight transferable skills relevant to the job
+2. Enhance descriptions to be BRIEF (1-2 sentences maximum), quantify results, and highlight relevance
 3. Prioritize activities that demonstrate leadership, teamwork, and skills mentioned in the job description
 4. Return the results in a structured JSON format
 
@@ -562,6 +644,8 @@ app.post('/enhance/resume', requireAuth, async (req, res) => {
     
     // Process all sections in parallel for efficiency
     const [
+      introductionResponse,
+      titleResponse,
       skillsResponse, 
       projectsResponse, 
       experienceResponse, 
@@ -569,6 +653,24 @@ app.post('/enhance/resume', requireAuth, async (req, res) => {
       achievementsResponse, 
       extracurricularResponse
     ] = await Promise.all([
+      fetch(`http://localhost:${port}/enhance/introduction`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          introduction: formData.introduction || '', 
+          jobDescription: jobDescription
+        })
+      }).then(r => r.json()),
+      
+      fetch(`http://localhost:${port}/enhance/title`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          title: formData.professionalTitle || '', 
+          jobDescription: jobDescription
+        })
+      }).then(r => r.json()),
+
       fetch(`http://localhost:${port}/enhance/skills`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -631,6 +733,8 @@ app.post('/enhance/resume', requireAuth, async (req, res) => {
     
     // Combine all enhanced data
     const enhancedData = {
+      enhancedIntroduction: introductionResponse.enhancedIntroduction || '',
+      enhancedTitle: titleResponse.enhancedTitle || '',
       enhancedSkills: skillsResponse.enhancedSkills || [],
       enhancedProjects: projectsResponse.enhancedProjects || [],
       enhancedExperiences: experienceResponse.enhancedExperiences || [],

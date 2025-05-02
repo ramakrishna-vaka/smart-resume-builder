@@ -131,6 +131,16 @@ const ResumeBuilder = () => {
       // Start with our current form data
       const mergedData = { ...formData };
       
+      // Introduction - enhance if dirty or not previously enhanced
+      if (isDirty.introduction && enhancedData.enhancedIntroduction) {
+        mergedData.introduction = enhancedData.enhancedIntroduction;
+      }
+      
+      // Professional Title - enhance if dirty or not previously enhanced
+      if (isDirty.professionalTitle && enhancedData.enhancedTitle) {
+        mergedData.professionalTitle = enhancedData.enhancedTitle;
+      }
+      
       // Skills - enhance if dirty or not previously enhanced
       if (isDirty.skills && Array.isArray(enhancedData.enhancedSkills)) {
         mergedData.skills = enhancedData.enhancedSkills.map(skill => 
@@ -143,7 +153,7 @@ const ResumeBuilder = () => {
         mergedData.projects = enhancedData.enhancedProjects.map(project => ({
           projectName: project.name || "",
           projectTechStack: project.techStack || "",
-          projectDescription: project.bullets ? project.bullets.join('\n• ') : ""
+          projectDescription: project.bullets ? '• ' + project.bullets.join('\n• ') : ""
         }));
       }
       
@@ -172,7 +182,7 @@ const ResumeBuilder = () => {
           description: cert.description || ''
         }));
       }
-
+  
       // Achievements - enhance if dirty
       if (isDirty.achievements && Array.isArray(enhancedData.enhancedAchievements)) {
         mergedData.achievements = enhancedData.enhancedAchievements.map(achievement => ({
@@ -182,7 +192,7 @@ const ResumeBuilder = () => {
           description: achievement.description || ''
         }));
       }
-
+  
       // Extracurricular Activities - enhance if dirty
       if (isDirty.extracurricularActivities && Array.isArray(enhancedData.enhancedActivities)) {
         mergedData.extracurricularActivities = enhancedData.enhancedActivities.map(activity => ({
