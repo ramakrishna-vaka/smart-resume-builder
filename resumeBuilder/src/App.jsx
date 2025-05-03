@@ -1,17 +1,16 @@
 import React from 'react';
 import * as ReactRouterDOM from 'react-router-dom';
-const { BrowserRouter, Routes, Route } = ReactRouterDOM;
-import { ClerkProvider, SignedIn, SignedOut, RedirectToSignIn } from '@clerk/clerk-react';
+const { BrowserRouter, Routes, Route, Navigate } = ReactRouterDOM;
+import { ClerkProvider, SignedIn, SignedOut } from '@clerk/clerk-react';
 import Header from './components/layout/Header';
 import Footer from './components/layout/Footer';
 import HeroPage from './pages/HeroPage';
 import TemplateSelection from './pages/TemplateSelection';
-import JobDescriptionPage from './pages/JobDescriptionPage'; // Import the new page
+import JobDescriptionPage from './pages/JobDescriptionPage';
 import ResumeBuilder from './components/layout/ResumeBuilder';
 import SignInPage from './pages/SignIn';
 import SignUpPage from './pages/SignUp';
 
-// Clerk public key from environment variable
 const clerkPubKey = "pk_test_bWFzdGVyLWRvbmtleS03MS5jbGVyay5hY2NvdW50cy5kZXYk";
 
 function App() {
@@ -31,7 +30,7 @@ function App() {
                       <TemplateSelection />
                     </SignedIn>
                     <SignedOut>
-                      <RedirectToSignIn />
+                      <Navigate to="/" replace />
                     </SignedOut>
                   </>
                 } 
@@ -44,7 +43,7 @@ function App() {
                       <JobDescriptionPage />
                     </SignedIn>
                     <SignedOut>
-                      <RedirectToSignIn />
+                      <Navigate to="/" replace />
                     </SignedOut>
                   </>
                 } 
@@ -57,7 +56,7 @@ function App() {
                       <ResumeBuilder />
                     </SignedIn>
                     <SignedOut>
-                      <RedirectToSignIn />
+                      <Navigate to="/" replace />
                     </SignedOut>
                   </>
                 } 

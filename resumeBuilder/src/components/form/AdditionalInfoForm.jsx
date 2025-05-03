@@ -74,7 +74,7 @@ const AdditionalInfoForm = ({ formData, handleChange, handleCertificationChange,
                       rows="2"
                       value={cert.description}
                       onChange={(e) => handleCertificationChange(index, 'description', e.target.value)}
-                      placeholder="Brief description of the certification and skills acquired"
+                      placeholder=""
                       style={{ minHeight: '60px' }}
                     />
                   </div>
@@ -124,7 +124,7 @@ const AdditionalInfoForm = ({ formData, handleChange, handleCertificationChange,
                       id={`achievementTitle-${index}`}
                       value={achievement.title}
                       onChange={(e) => handleAchievementChange(index, 'title', e.target.value)}
-                      placeholder="1st Place in Hackathon"
+                      placeholder=""
                     />
                   </div>
                   <div className="col-md-4">
@@ -135,7 +135,7 @@ const AdditionalInfoForm = ({ formData, handleChange, handleCertificationChange,
                       id={`achievementYear-${index}`}
                       value={achievement.year}
                       onChange={(e) => handleAchievementChange(index, 'year', e.target.value)}
-                      placeholder="2023"
+                      placeholder=""
                     />
                   </div>
                   <div className="col-12">
@@ -146,7 +146,7 @@ const AdditionalInfoForm = ({ formData, handleChange, handleCertificationChange,
                       id={`achievementOrganization-${index}`}
                       value={achievement.organization}
                       onChange={(e) => handleAchievementChange(index, 'organization', e.target.value)}
-                      placeholder="Google Developer Challenge"
+                      placeholder=""
                     />
                   </div>
                   <div className="col-12">
@@ -157,7 +157,7 @@ const AdditionalInfoForm = ({ formData, handleChange, handleCertificationChange,
                       rows="2"
                       value={achievement.description}
                       onChange={(e) => handleAchievementChange(index, 'description', e.target.value)}
-                      placeholder="Describe your achievement and its significance"
+                      placeholder=""
                       style={{ minHeight: '60px' }}
                     />
                   </div>
@@ -207,7 +207,7 @@ const AdditionalInfoForm = ({ formData, handleChange, handleCertificationChange,
                       id={`activityName-${index}`}
                       value={activity.name}
                       onChange={(e) => handleActivityChange(index, 'name', e.target.value)}
-                      placeholder="Volunteer Teaching"
+                      placeholder=""
                     />
                   </div>
                   <div className="col-md-6">
@@ -218,7 +218,7 @@ const AdditionalInfoForm = ({ formData, handleChange, handleCertificationChange,
                       id={`activityRole-${index}`}
                       value={activity.role}
                       onChange={(e) => handleActivityChange(index, 'role', e.target.value)}
-                      placeholder="Team Lead"
+                      placeholder=""
                     />
                   </div>
                   <div className="col-md-6">
@@ -229,7 +229,7 @@ const AdditionalInfoForm = ({ formData, handleChange, handleCertificationChange,
                       id={`activityOrganization-${index}`}
                       value={activity.organization}
                       onChange={(e) => handleActivityChange(index, 'organization', e.target.value)}
-                      placeholder="Local Community Center"
+                      placeholder=""
                     />
                   </div>
                   <div className="col-md-6">
@@ -240,7 +240,7 @@ const AdditionalInfoForm = ({ formData, handleChange, handleCertificationChange,
                       id={`activityPeriod-${index}`}
                       value={activity.period}
                       onChange={(e) => handleActivityChange(index, 'period', e.target.value)}
-                      placeholder="2020 - Present"
+                      placeholder=""
                     />
                   </div>
                   <div className="col-12">
@@ -251,7 +251,7 @@ const AdditionalInfoForm = ({ formData, handleChange, handleCertificationChange,
                       rows="2"
                       value={activity.description}
                       onChange={(e) => handleActivityChange(index, 'description', e.target.value)}
-                      placeholder="Describe your role and impact"
+                      placeholder=""
                       style={{ minHeight: '60px' }}
                     />
                   </div>

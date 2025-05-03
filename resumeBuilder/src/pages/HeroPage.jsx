@@ -85,7 +85,7 @@ const HeroPage = () => {
                 </div>
                 <h4>Fill Your Details</h4>
                 <p className="text-muted">
-                  Enter your information or import from LinkedIn
+                  Enter your information only for the first use, next time it will be auto-filled
                 </p>
               </div>
             </div>
@@ -96,7 +96,7 @@ const HeroPage = () => {
                 <div className="rounded-circle bg-primary bg-opacity-10 p-3 d-inline-flex mb-3">
                   <i className="bi bi-3-circle-fill fs-2 text-primary"></i>
                 </div>
-                <h4>Generate & Download</h4>
+                <h4>Enhance & Download</h4>
                 <p className="text-muted">
                   Our AI tailors your resume to job descriptions for higher success rates
                 </p>

@@ -3,7 +3,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import FormContainer from '../form/FormContainer';
 import PreviewPane from './PreviewPane';
 import ResumeNavHeader from './ResumeNavHeader';
-import EnhanceButton from '../controls/EnhanceButton';
 import StatusIndicators from '../ui/StatusIndicators';
 import { initialFormState } from '../../utils/formInitialState';
 import '../../styles/ResumeNavHeader.css';
@@ -333,6 +332,8 @@ const ResumeBuilder = () => {
         activeSectionId={activeSectionId}
         setActiveSectionId={setActiveSectionId}
         loadPreviousData={loadPreviousData}
+        handleEnhance={handleEnhance}
+        isEnhancing={isEnhancing}
       />
       
       <div className="container mt-4">
@@ -342,10 +343,6 @@ const ResumeBuilder = () => {
             <div className="form-container">
               <div className="d-flex justify-content-between align-items-center mb-3">
                 <h2>Resume Details</h2>
-                <EnhanceButton 
-                  onClick={handleEnhance} 
-                  isEnhancing={isEnhancing} 
-                />
               </div>
               
               <FormContainer 

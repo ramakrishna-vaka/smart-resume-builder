@@ -30,17 +30,45 @@ const PreviewPane = ({ formData }) => {
           <h1 className="resume-name">
             {formData.firstName} {formData.lastName}
           </h1>
+          
+          {/* Professional Title */}
+          
+          <div className='professional-title'>{formData.professionalTitle && (
+            <span>{formData.professionalTitle}</span>
+          )}</div>
+          
           <div className="contact-info">
             {formData.phoneNo && <span>{formData.phoneNo}</span>}
             {formData.phoneNo && formData.email && <span> • </span>}
             {formData.email && <span>{formData.email}</span>}
-            {(formData.phoneNo || formData.email) && formData.username && <span> • </span>}
-            {formData.username && <span>@{formData.username}</span>}
+            
+            {(formData.phoneNo || formData.email) && 
+             (formData.linkedinUrl || formData.githubUrl || formData.portfolioUrl) && 
+             <span> • </span>}
+            
+            {formData.linkedinUrl && <span>LinkedIn</span>}
+            {formData.linkedinUrl && (formData.githubUrl || formData.portfolioUrl) && <span> • </span>}
+            
+            {formData.githubUrl && <span>GitHub</span>}
+            {formData.githubUrl && formData.portfolioUrl && <span> • </span>}
+            
+            {formData.portfolioUrl && <span>Portfolio</span>}
           </div>
         </div>
 
-        {/* Education */}
-        {(formData.graduationCollegeName ||
+        {/* Introduction */}
+        {formData.introduction && (
+          <div className="resume-section">
+            <h2 className="section-heading">Introduction</h2>
+            <div className="introduction-content">
+              {formData.introduction}
+            </div>
+            {/* <hr className="section-divider" /> */}
+          </div>
+        )}
+
+{/* Education */}
+{(formData.graduationCollegeName ||
           formData.interCollegeName ||
           formData.schoolName) && (
           <div className="resume-section">
@@ -82,7 +110,6 @@ const PreviewPane = ({ formData }) => {
             )}
           </div>
         )}
-
         {/* Technical Skills */}
         {formData.skills?.length > 0 && (
           <div className="resume-section">
@@ -120,8 +147,8 @@ const PreviewPane = ({ formData }) => {
           </div>
         )}
 
-        {/* Projects */}
-        {formData.projects?.length > 0 && (
+        {/* Projects - Only show if there's content */}
+        {formData.projects?.some(p => p.projectName) && (
           <div className="resume-section">
             <h2 className="section-heading">Projects</h2>
             {formData.projects.map((p, i) =>
@@ -143,7 +170,7 @@ const PreviewPane = ({ formData }) => {
           </div>
         )}
 
-        {/* Certifications - UPDATED */}
+        {/* Certifications */}
         {formData.certifications && formData.certifications.length > 0 && (
           <div className="resume-section">
             <h2 className="section-heading">Certifications</h2>
@@ -164,7 +191,7 @@ const PreviewPane = ({ formData }) => {
           </div>
         )}
 
-        {/* Achievements - UPDATED */}
+        {/* Achievements */}
         {formData.achievements && formData.achievements.length > 0 && (
           <div className="resume-section">
             <h2 className="section-heading">Achievements</h2>
@@ -185,7 +212,7 @@ const PreviewPane = ({ formData }) => {
           </div>
         )}
 
-        {/* Extracurricular Activities - UPDATED */}
+        {/* Extracurricular Activities */}
         {formData.extracurricularActivities && formData.extracurricularActivities.length > 0 && (
           <div className="resume-section">
             <h2 className="section-heading">Extracurricular Activities</h2>

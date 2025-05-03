@@ -1,7 +1,7 @@
 /* src/styles/PreviewPane.css */
   
 .preview-pane {
-    width: 250px;
+    width: 290px;
     max-width: 100%; 
     padding: 20px;
     height: 350px;
@@ -29,6 +29,16 @@
     font-size: 7px;
     color: #666;
 }
+.professional-title {
+    font-size: 7px;
+    color: #666;
+}
+.introduction-content{
+    font-size: 7px;
+    line-height: 1.2;
+    margin-top: 2px;
+}
+
   
 /* Section headings */
 .resume-section {

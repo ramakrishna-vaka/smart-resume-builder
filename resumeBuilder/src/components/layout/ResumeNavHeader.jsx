@@ -1,8 +1,10 @@
 // components/layout/ResumeNavHeader.jsx
 import React from 'react';
 import '../../styles/ResumeNavHeader.css';
+import EnhanceButton from '../controls/EnhanceButton';
 
-const ResumeNavHeader = ({ sections = [], activeSectionId = '', setActiveSectionId = () => {}, loadPreviousData = () => {} }) => {
+const ResumeNavHeader = ({ sections = [], activeSectionId = '', setActiveSectionId = () => {}, loadPreviousData = () => {},handleEnhance = () => {},
+isEnhancing = false }) => {
   const scrollToSection = (sectionId) => {
     const section = document.querySelector(`[data-section-id="${sectionId}"]`);
     if (section) {
@@ -37,6 +39,11 @@ const ResumeNavHeader = ({ sections = [], activeSectionId = '', setActiveSection
             >
               Use Previous Data
             </button>
+            <EnhanceButton 
+                  onClick={handleEnhance} 
+                  isEnhancing={isEnhancing} 
+                  className="ms-3"
+              />
           </div>
           
           <div className="d-flex flex-nowrap resume-sections align-items-center">

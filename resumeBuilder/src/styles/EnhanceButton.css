@@ -1,38 +1,107 @@
 /* src/styles/EnhanceButton.css */
 
 .enhance-btn {
-    background-color: #6366f1;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    padding: 8px 16px;
-    font-weight: 500;
-    transition: all 0.2s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  
-  .enhance-btn:hover {
-    background-color: #4f46e5;
-    transform: translateY(-1px);
-    box-shadow: 0 4px 8px rgba(99, 102, 241, 0.3);
-  }
-  
-  .enhance-btn:active {
-    transform: translateY(0);
-    box-shadow: 0 2px 4px rgba(99, 102, 241, 0.3);
-  }
-  
-  .enhance-btn:disabled {
-    background-color: #9ca3af;
-    cursor: not-allowed;
-    transform: none;
-    box-shadow: none;
-  }
-  
-  /* Spinner styling */
-  .enhance-btn .spinner-border {
-    width: 1rem;
-    height: 1rem;
-  }
+  /* same rainbow gradient + shimmer you already love */
+  background: linear-gradient(
+    90deg,
+    #ff3c78,
+    #ffdb3c,
+    #3cff6e,
+    #3cb8ff,
+    #9d3cff
+  );
+  background-size: 300% 300%;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  /* slightly smaller padding */
+  padding: 2px 5px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: rainbow-loop 4s ease infinite;
+}
+
+/* … keep your rainbow-loop keyframes … */
+
+.enhance-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.enhance-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.enhance-btn:disabled {
+  /* gold gradient base */
+  background: linear-gradient(
+    90deg,
+    #D4AF37 0%,
+    #FFD700 50%,
+    #FFF1B5 100%
+  );
+  /* charcoal for high-contrast, premium text */
+  color: #2b2b2b;
+  cursor: not-allowed;
+  position: relative;
+  overflow: hidden;
+
+  /* remove the black border entirely */
+  border: none;
+
+  /* a gentler glow */
+  box-shadow:
+    0 0 6px rgba(212,175,55,0.5),
+    inset 0 0 4px rgba(255,255,255,0.2);
+
+  /* same shimmer, but a tad slower */
+  background-size: 300% 100%;
+  animation: gold-shimmer 6s ease-in-out infinite;
+}
+
+/* tint the spinner so it shows up nicely on gold */
+.enhance-btn:disabled .spinner-border {
+  border-color: rgba(47,47,47,0.2);
+  border-top-color: #2b2b2b;
+}
+
+/* keep sparkles minimal—smaller & more subtle */
+.enhance-btn:disabled::after {
+  content: "";
+  position: absolute;
+  top: -60%;
+  left: -60%;
+  width: 220%;
+  height: 220%;
+  background-image: radial-gradient(
+    circle at 30% 30%,
+    rgba(255,255,255,0.6) 0%,
+    transparent 70%
+  );
+  background-size: 20% 20%;
+  animation: sparkles 3s linear infinite;
+  pointer-events: none;
+  opacity: 0.3;
+}
+
+/* … keep gold-shimmer & sparkles keyframes, no change … */
+
+/* keyframes for gold shimmer */
+@keyframes gold-shimmer {
+  0%   { background-position:   0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position:   0% 50%; }
+}
+
+/* keyframes for the sparkle overlay */
+@keyframes sparkles {
+  0%   { transform: translate(0%,   0%)   scale(1); opacity: 0.4; }
+  25%  { transform: translate(50%,  20%)  scale(0.8); opacity: 0.2; }
+  50%  { transform: translate(80%,  80%)  scale(1.2); opacity: 0.4; }
+  75%  { transform: translate(30%, 100%)  scale(0.9); opacity: 0.2; }
+  100% { transform: translate(0%,   0%)   scale(1); opacity: 0.4; }
+}

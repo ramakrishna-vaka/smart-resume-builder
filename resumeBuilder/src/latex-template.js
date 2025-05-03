@@ -10,7 +10,14 @@ export function generateLaTeX(formData) {
     const portfolioUrl = formData.portfolioUrl || ''; // Added portfolio URL
     
     // Professional title with default
-    const professionalTitle = formData.professionalTitle;
+    const professionalTitle = formData.professionalTitle || '';
+
+    const formatProfessionalTitle = (title) => {
+      if (!title) return '';
+      
+      // Replace commas with vertical bars and ensure proper LaTeX escaping
+      return escapeLatex(title.replace(/\s*,\s*/g, ' $|$ '));
+    };
     
     // Get introduction text
     const introduction = formData.introduction || '';
@@ -292,10 +299,10 @@ ${formattedBullets}
     const formattedPortfolioUrl = portfolioUrl ? `$|$ \\href{${escapeLatex(portfolioUrl)}}{\\underline{Portfolio}}` : '';
     
     // Introduction section with horizontal rule
-    const introductionSection = `
+    const introductionSection = introduction ?`
 \\section{Introduction}
 ${escapeLatex(introduction)}
-`;
+` : '';
     
     return `\\documentclass[letterpaper,10pt]{article}
   
@@ -386,8 +393,8 @@ ${escapeLatex(introduction)}
   \\begin{center}
       \\textbf{\\Large \\scshape ${escapeLatex(firstName)} ${escapeLatex(lastName)}} \\\\
       \\vspace{2pt}
-      \\small{\\textit{${escapeLatex(professionalTitle)}}} \\\\
-      \\vspace{2pt}
+      ${professionalTitle ? `\\small{\\textit{${formatProfessionalTitle(escapeLatex(professionalTitle))}}} \\\\
+      \\vspace{2pt}`: ''}
       \\small{${escapeLatex(phoneNo)} $|$ \\href{mailto:${escapeLatex(email)}}{\\underline{${escapeLatex(email)}}} $|$ 
       ${formattedLinkedinUrl} $|$
       ${formattedGithubUrl}${formattedLeetcodeUrl}${formattedPortfolioUrl}} \\\\ 

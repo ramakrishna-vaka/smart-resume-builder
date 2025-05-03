@@ -2,7 +2,7 @@
 import React from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth, UserButton } from '@clerk/clerk-react';
-import resumeBuilderLogo from '../../assets/Resume Builder Logo.png';
+import resumeBuilderLogo from '../../assets/my_logo.png';
 
 const Header = () => {
   const { isSignedIn } = useAuth();
@@ -70,7 +70,7 @@ const Header = () => {
             
             {isSignedIn ? (
               <div className="d-flex align-items-center">
-                <UserButton afterSignOutUrl="/" />
+                <UserButton afterSignOutUrl="/sign-in" />
               </div>
             ) : (
               <div className="d-flex">
