@@ -1,7 +1,7 @@
 // components/layout/Header.jsx
 import React from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { useAuth, UserButton } from '@clerk/clerk-react';
+import { useAuth, UserButton,SignOutButton } from '@clerk/clerk-react';
 import resumeBuilderLogo from '../../assets/my_logo.png';
 
 const Header = () => {
@@ -70,8 +70,13 @@ const Header = () => {
             
             {isSignedIn ? (
               <div className="d-flex align-items-center">
-                <UserButton afterSignOutUrl="/sign-in" />
-              </div>
+                <UserButton />
+                <SignOutButton redirectUrl="/">
+                  <button className="btn btn-outline-danger ms-3">
+                    Sign Out
+                  </button>
+                </SignOutButton>
+                  </div>
             ) : (
               <div className="d-flex">
                 <Link to="/sign-in" className="btn btn-outline-primary me-2">Sign In</Link>

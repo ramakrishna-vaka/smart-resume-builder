@@ -10,7 +10,7 @@ const SignInPage = () => {
           <div className="card shadow">
             <div className="card-body p-4">
               <h2 className="text-center mb-4">Sign In</h2>
-              <SignIn routing="path" path="/sign-in" />
+              <SignIn routing="path" path="/sign-in"  fallbackRedirectUrl="/" />
             </div>
           </div>
         </div>
