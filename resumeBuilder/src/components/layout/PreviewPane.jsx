@@ -61,9 +61,8 @@ const PreviewPane = ({ formData }) => {
           <div className="resume-section">
             <h2 className="section-heading">Introduction</h2>
             <div className="introduction-content">
-              {formData.introduction}
+              <span>{formData.introduction}</span>
             </div>
-            {/* <hr className="section-divider" /> */}
           </div>
         )}
 

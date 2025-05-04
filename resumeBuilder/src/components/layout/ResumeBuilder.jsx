@@ -33,6 +33,8 @@ const ResumeBuilder = () => {
   
   // State for ResumeNavBar
   const [activeSectionId, setActiveSectionId] = useState('personal-info');
+
+  const blobUrlsRef = useRef([]);
   
   // Define resume sections for the NavBar
   const resumeSections = [
@@ -47,6 +49,18 @@ const ResumeBuilder = () => {
   // Refs for section elements in the FormContainer
   const formContainerRef = useRef(null);
 
+// Cleanup blob URLs when component unmounts
+  useEffect(() => {
+    return () => {
+      // Revoke all blob URLs when component unmounts
+      if (blobUrlsRef.current && blobUrlsRef.current.length > 0) {
+        blobUrlsRef.current.forEach(url => {
+          window.URL.revokeObjectURL(url);
+        });
+        blobUrlsRef.current = [];
+      }
+    };
+  }, []);
   // Update active section based on scroll position
   useEffect(() => {
     const handleScroll = () => {
@@ -303,8 +317,9 @@ const ResumeBuilder = () => {
         a.download = `${formData.firstName}_${formData.lastName}_resume.pdf`;
         document.body.appendChild(a);
         a.click();
-        window.URL.revokeObjectURL(url);
         a.remove();
+        // Store the URL in the ref for cleanup when component unmounts
+        blobUrlsRef.current.push(url);
         
         setResumeGenerated(true);
         setSuccessMessage('Resume generated successfully!');

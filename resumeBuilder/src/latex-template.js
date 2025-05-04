@@ -14,9 +14,8 @@ export function generateLaTeX(formData) {
 
     const formatProfessionalTitle = (title) => {
       if (!title) return '';
-      
-      // Replace commas with vertical bars and ensure proper LaTeX escaping
-      return escapeLatex(title.replace(/\s*,\s*/g, ' $|$ '));
+      const escapedTitle = escapeLatex(title);
+      return escapedTitle.replace(/\s*,\s*/g, ' $|$ ');
     };
     
     // Get introduction text
@@ -31,11 +30,11 @@ export function generateLaTeX(formData) {
     const graduationCollegeAddress = formData.graduationCollegeAddress || 'City, State';
     
     // Get intermediate education info if available
-    const intermediateCollegeName = formData.intermediateCollegeName || '';
+    const intermediateCollegeName = formData.interCollegeName || '';
     const intermediateDegree = formData.intermediateDegree || 'Intermediate Education';
-    const intermediateCollegePeriod = formData.intermediateCollegePeriod || '';
-    const intermediateScore = formData.intermediateScore || '';
-    const intermediateCollegeAddress = formData.intermediateCollegeAddress || '';
+    const intermediateCollegePeriod = formData.interPeriod || '';
+    const intermediateScore = formData.interScore || '';
+    const intermediateCollegeAddress = formData.interCollegeAddress || '';
     
     // Get school info if available
     const schoolName = formData.schoolName || '';
@@ -47,7 +46,7 @@ export function generateLaTeX(formData) {
     // Escape special LaTeX characters - IMPROVED VERSION
     const escapeLatex = (text) => {
       if (!text) return '';
-      return String(text)
+      return String(text) 
         .replace(/\\/g, '\\textbackslash{}') // Handle backslash first to avoid double escaping
         .replace(/&/g, '\\&')
         .replace(/_/g, '\\_')
@@ -197,15 +196,41 @@ ${formattedBullets}
       experienceSection = ""; // Empty string if no experience
     }
      
-    // Generate skills section with the three categories
-    const languages = Array.isArray(formData.languages) ? formData.languages.join(', ') : 
-      (formData.languages || 'Java, Python, C/C++, SQL, HTML, CSS, JavaScript');
-    
-    const coreCompetencies = Array.isArray(formData.coreCompetencies) ? formData.coreCompetencies.join(', ') : 
-      (formData.coreCompetencies || 'OOPS, Database Management Systems, Computer Networks, SDLC, Operating Systems');
-    
-    const technicalSkills = Array.isArray(formData.technicalSkills) ? formData.technicalSkills.join(', ') : 
-      (formData.technicalSkills || 'Git, Data structures and algorithms, MERN Stack, Power BI');
+    const skills = formData.skills || [];
+const allLanguages = ['javascript', 'typescript', 'python', 'java', 'csharp', 'cpp', 'go', 
+  'ruby', 'php', 'swift', 'kotlin', 'rust', 'r', 'dart', 'html', 'css'];
+
+const allCoreCompetencies = ['computer networking', 'cloud computing', 'data structures', 
+         'oops', 'operating systems', 'dbms', 'software engineering', 
+         'web development', 'penetration testing', 'cyber security', 'data-analysis'];
+
+const { languages, coreCompetencies, technicalSkills } = categorizeUserSkills(skills);
+function categorizeUserSkills(userSkills) {
+
+const languages = [];
+const coreCompetencies = [];
+const technicalSkills = [];
+
+// Categorize each user skill
+userSkills.forEach(skill => {
+const skillLower = skill.toLowerCase();
+
+if (allLanguages.includes(skillLower)) {
+languages.push(skill);
+} else if (allCoreCompetencies.includes(skillLower)) {
+coreCompetencies.push(skill);
+} else {
+technicalSkills.push(skill);
+}
+});
+
+// Convert arrays to comma-separated strings or use defaults if empty
+return {
+languages: languages.length > 0 ? languages.join(', ') : 'Java, Python, C/C++, SQL, HTML, CSS, JavaScript',
+coreCompetencies: coreCompetencies.length > 0 ? coreCompetencies.join(', ') : 'OOPS, Database Management Systems, Computer Networks, SDLC, Operating Systems',
+technicalSkills: technicalSkills.length > 0 ? technicalSkills.join(', ') : 'Git, Data structures and algorithms, MERN Stack, Power BI'
+};
+}
     
     // Generate certifications section
     let certificationsSection = '';
@@ -222,12 +247,44 @@ ${formattedBullets}
           const issuer = escapeLatex(cert.issuer || '');
           const date = escapeLatex(cert.date || '');
           const link = cert.link ? `\\href{${escapeLatex(cert.link)}}{${certName}}` : certName;
+
+          // Handle description - ensure we have at least one item
+        let bulletPoints = [];
+        if (typeof cert.description === 'string' && cert.description.trim()) {
+          // Try to split by explicit bullet points, new lines, or periods
+          bulletPoints = cert.description
+            .split(/•|\n|(?<=[.;])\s+/)
+            .map(point => point.trim())
+            .filter(point => point.length > 0);
+          
+          // If we couldn't split it properly, just use it as a single bullet
+          if (bulletPoints.length === 0) {
+            bulletPoints = ["Completed certification requirements and demonstrated proficiency."];
+          }
+        } else if (Array.isArray(cert.description)) {
+          bulletPoints = cert.description.filter(point => point && point.trim());
+          // Ensure we have at least one bullet point
+          if (bulletPoints.length === 0) {
+            bulletPoints = ["Completed certification requirements and demonstrated proficiency."];
+          }
+        } else {
+          // Default bullet point if no description
+          bulletPoints = ["Completed certification requirements and demonstrated proficiency."];
+        }
+        
+        // Format bullet points - ensure we have content
+        const formattedBullets = bulletPoints
+          .map(bullet => {
+            const escapedBullet = escapeLatex(bullet.trim());
+            return `    \\resumeItem{${escapedBullet}}`;
+          })
+          .join('\n');
           
           certificationsSection += `
   \\resumeProjectHeading
     {\\textbf{${link}}}{${issuer} | ${date}}
     \\resumeItemListStart
-      \\resumeItem{${escapeLatex(cert.description || 'Completed certification requirements and demonstrated proficiency.')}}
+${formattedBullets}
     \\resumeItemListEnd`;
         });
       
@@ -249,13 +306,45 @@ ${formattedBullets}
           const title = escapeLatex(achievement.title || '');
           const year = escapeLatex(achievement.year || '');
           const organization = escapeLatex(achievement.organization || '');
+
+          // Handle description - ensure we have at least one item
+        let bulletPoints = [];
+        if (typeof achievement.description === 'string' && achievement.description.trim()) {
+          // Try to split by explicit bullet points, new lines, or periods
+          bulletPoints = achievement.description
+            .split(/•|\n|(?<=[.;])\s+/)
+            .map(point => point.trim())
+            .filter(point => point.length > 0);
+          
+          // If we couldn't split it properly, just use it as a single bullet
+          if (bulletPoints.length === 0) {
+            bulletPoints = ["Recognized for outstanding performance and contributions."];
+          }
+        } else if (Array.isArray(achievement.description)) {
+          bulletPoints = achievement.description.filter(point => point && point.trim());
+          // Ensure we have at least one bullet point
+          if (bulletPoints.length === 0) {
+            bulletPoints = ["Recognized for outstanding performance and contributions."];
+          }
+        } else {
+          // Default bullet point if no description
+          bulletPoints = ["Recognized for outstanding performance and contributions."];
+        }
+        
+        // Format bullet points - ensure we have content
+        const formattedBullets = bulletPoints
+          .map(bullet => {
+            const escapedBullet = escapeLatex(bullet.trim());
+            return `    \\resumeItem{${escapedBullet}}`;
+          })
+          .join('\n');
           
           achievementsSection += `
   \\resumeProjectHeading
     {\\textbf{${title}}}{${year}}
     {${organization}}{}
     \\resumeItemListStart
-      \\resumeItem{${escapeLatex(achievement.description || 'Recognized for outstanding performance and contributions.')}}
+      ${formattedBullets}
     \\resumeItemListEnd`;
         });
       
@@ -279,12 +368,43 @@ ${formattedBullets}
           const organization = escapeLatex(activity.organization || '');
           const period = escapeLatex(activity.period || '');
           
+          // Handle description - ensure we have at least one item
+        let bulletPoints = [];
+        if (typeof activity.description === 'string' && activity.description.trim()) {
+          // Try to split by explicit bullet points, new lines, or periods
+          bulletPoints = activity.description
+            .split(/•|\n|(?<=[.;])\s+/)
+            .map(point => point.trim())
+            .filter(point => point.length > 0);
+          
+          // If we couldn't split it properly, just use it as a single bullet
+          if (bulletPoints.length === 0) {
+            bulletPoints = ["Participated actively and contributed to the organization\'s goals."];
+          }
+        } else if (Array.isArray(activity.description)) {
+          bulletPoints = activity.description.filter(point => point && point.trim());
+          // Ensure we have at least one bullet point
+          if (bulletPoints.length === 0) {
+            bulletPoints = ["Participated actively and contributed to the organization\'s goals."];
+          }
+        } else {
+          // Default bullet point if no description
+          bulletPoints = ["Participated actively and contributed to the organization\'s goals."];
+        }
+        
+        // Format bullet points - ensure we have content
+        const formattedBullets = bulletPoints
+          .map(bullet => {
+            const escapedBullet = escapeLatex(bullet.trim());
+            return `    \\resumeItem{${escapedBullet}}`;
+          })
+          .join('\n');
           extracurricularSection += `
   \\resumeSubheading
     {${name}}{${period}}
     {${role}}{${organization}}
     \\resumeItemListStart
-      \\resumeItem{${escapeLatex(activity.description || 'Participated actively and contributed to the organization\'s goals.')}}
+      ${formattedBullets}
     \\resumeItemListEnd`;
         });
       
@@ -393,7 +513,7 @@ ${escapeLatex(introduction)}
   \\begin{center}
       \\textbf{\\Large \\scshape ${escapeLatex(firstName)} ${escapeLatex(lastName)}} \\\\
       \\vspace{2pt}
-      ${professionalTitle ? `\\small{\\textit{${formatProfessionalTitle(escapeLatex(professionalTitle))}}} \\\\
+      ${professionalTitle ? `\\small{\\textit{${formatProfessionalTitle(professionalTitle)}}} \\\\
       \\vspace{2pt}`: ''}
       \\small{${escapeLatex(phoneNo)} $|$ \\href{mailto:${escapeLatex(email)}}{\\underline{${escapeLatex(email)}}} $|$ 
       ${formattedLinkedinUrl} $|$

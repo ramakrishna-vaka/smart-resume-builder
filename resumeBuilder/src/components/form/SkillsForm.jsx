@@ -18,6 +18,8 @@ const SkillsForm = ({ skills, handleSkillsChange }) => {
     { value: 'swift', label: 'Swift' },
     { value: 'kotlin', label: 'Kotlin' },
     { value: 'rust', label: 'Rust' },
+    {value:'r', label: 'R'},
+    {value:'dart', label: 'Dart'},
     
     // Frontend
     { value: 'react', label: 'React' },
@@ -63,6 +65,7 @@ const SkillsForm = ({ skills, handleSkillsChange }) => {
     { value: 'jenkins', label: 'Jenkins' },
     { value: 'github-actions', label: 'GitHub Actions' },
     { value: 'gitlab-ci', label: 'GitLab CI' },
+    {value:'bitbucket', label: 'Bitbucket'},
     
     // Mobile
     { value: 'react-native', label: 'React Native' },
@@ -86,6 +89,19 @@ const SkillsForm = ({ skills, handleSkillsChange }) => {
     { value: 'data-analysis', label: 'Data Analysis' },
     { value: 'agile', label: 'Agile/Scrum' },
     { value: 'linux', label: 'Linux' },
+
+    //Core competencies
+    {value: 'computer networking', label: 'Computer Networking'},
+    {value: 'cloud computing', label: 'Cloud Computing'},
+    {value: 'data structures', label: 'Data Structures'},
+    {value:'oops', label: 'Object Oriented Programming'},
+    {value: 'operating systems', label: 'Operating Systems'},
+    {value: 'dbms', label: 'Database Management Systems'},
+    {value: 'software engineering', label: 'Software Engineering'},
+    {value: 'web development', label: 'Web Development'},
+    {value:'penetration testing', label: 'Penetration Testing'},
+    {value: 'cyber security', label: 'Cyber Security'},
+
   ];
 
   return (
