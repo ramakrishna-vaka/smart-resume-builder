@@ -10,9 +10,12 @@ import '../../styles/ResumeBuilder.css';
 import { initStickyPreviewHandler } from '../../utils/stickyPreviewHandler';
 import { formatFormDataForApi } from '../../utils/dataFormatter';
 import useApiService from '../../services/apiService';
+import { useAuth } from '@clerk/clerk-react';
 
 const ResumeBuilder = () => {
   const apiService = useApiService();
+  const auth = useAuth();
+  const { isLoaded, isSignedIn, getToken } = auth;
 
   useEffect(() => {
     // Initialize sticky preview handler
@@ -229,6 +232,12 @@ const ResumeBuilder = () => {
     }
   };
   
+  useEffect(() => {
+    if (isLoaded && isSignedIn) {
+      loadPreviousData();
+    }
+  }, [isLoaded, isSignedIn]);
+
   const loadPreviousData = async () => {
     try {
       setSuccessMessage('');
