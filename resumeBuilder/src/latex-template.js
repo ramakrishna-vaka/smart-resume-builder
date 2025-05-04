@@ -233,7 +233,186 @@ technicalSkills: technicalSkills.length > 0 ? technicalSkills.join(', ') : 'Git,
 }
     
     // Generate certifications section
-    let certificationsSection = '';
+//     let certificationsSection = '';
+//     if (Array.isArray(formData.certifications) && formData.certifications.length > 0 && 
+//         formData.certifications.some(cert => cert && cert.name)) {
+//       certificationsSection = `
+// \\section{Certifications}
+// \\resumeSubHeadingListStart`;
+
+//       formData.certifications
+//         .filter(cert => cert && cert.name)
+//         .forEach(cert => {
+//           const certName = escapeLatex(cert.name || '');
+//           const issuer = escapeLatex(cert.issuer || '');
+//           const date = escapeLatex(cert.date || '');
+//           const link = cert.link ? `\\href{${escapeLatex(cert.link)}}{${certName}}` : certName;
+
+//           // Handle description - ensure we have at least one item
+//         let bulletPoints = [];
+//         if (typeof cert.description === 'string' && cert.description.trim()) {
+//           // Try to split by explicit bullet points, new lines, or periods
+//           bulletPoints = cert.description
+//             .split(/•|\n|(?<=[.;])\s+/)
+//             .map(point => point.trim())
+//             .filter(point => point.length > 0);
+          
+//           // If we couldn't split it properly, just use it as a single bullet
+//           if (bulletPoints.length === 0) {
+//             bulletPoints = ["Completed certification requirements and demonstrated proficiency."];
+//           }
+//         } else if (Array.isArray(cert.description)) {
+//           bulletPoints = cert.description.filter(point => point && point.trim());
+//           // Ensure we have at least one bullet point
+//           if (bulletPoints.length === 0) {
+//             bulletPoints = ["Completed certification requirements and demonstrated proficiency."];
+//           }
+//         } else {
+//           // Default bullet point if no description
+//           bulletPoints = ["Completed certification requirements and demonstrated proficiency."];
+//         }
+        
+//         // Format bullet points - ensure we have content
+//         const formattedBullets = bulletPoints
+//           .map(bullet => {
+//             const escapedBullet = escapeLatex(bullet.trim());
+//             return `    \\resumeItem{${escapedBullet}}`;
+//           })
+//           .join('\n');
+          
+//           certificationsSection += `
+//   \\resumeProjectHeading
+//     {\\textbf{${link}}}{${issuer} | ${date}}
+//     \\resumeItemListStart
+// ${formattedBullets}
+//     \\resumeItemListEnd`;
+//         });
+      
+//       certificationsSection += `
+// \\resumeSubHeadingListEnd`;
+//     }
+
+//     // Generate achievements section
+//     let achievementsSection = '';
+//     if (Array.isArray(formData.achievements) && formData.achievements.length > 0 && 
+//         formData.achievements.some(achievement => achievement && achievement.title)) {
+//       achievementsSection = `
+// \\section{Achievements}
+// \\resumeSubHeadingListStart`;
+
+//       formData.achievements
+//         .filter(achievement => achievement && achievement.title)
+//         .forEach(achievement => {
+//           const title = escapeLatex(achievement.title || '');
+//           const year = escapeLatex(achievement.year || '');
+//           const organization = escapeLatex(achievement.organization || '');
+
+//           // Handle description - ensure we have at least one item
+//         let bulletPoints = [];
+//         if (typeof achievement.description === 'string' && achievement.description.trim()) {
+//           // Try to split by explicit bullet points, new lines, or periods
+//           bulletPoints = achievement.description
+//             .split(/•|\n|(?<=[.;])\s+/)
+//             .map(point => point.trim())
+//             .filter(point => point.length > 0);
+          
+//           // If we couldn't split it properly, just use it as a single bullet
+//           if (bulletPoints.length === 0) {
+//             bulletPoints = ["Recognized for outstanding performance and contributions."];
+//           }
+//         } else if (Array.isArray(achievement.description)) {
+//           bulletPoints = achievement.description.filter(point => point && point.trim());
+//           // Ensure we have at least one bullet point
+//           if (bulletPoints.length === 0) {
+//             bulletPoints = ["Recognized for outstanding performance and contributions."];
+//           }
+//         } else {
+//           // Default bullet point if no description
+//           bulletPoints = ["Recognized for outstanding performance and contributions."];
+//         }
+        
+//         // Format bullet points - ensure we have content
+//         const formattedBullets = bulletPoints
+//           .map(bullet => {
+//             const escapedBullet = escapeLatex(bullet.trim());
+//             return `    \\resumeItem{${escapedBullet}}`;
+//           })
+//           .join('\n');
+          
+//           achievementsSection += `
+//   \\resumeProjectHeading
+//     {\\textbf{${title}}}{${year}}
+//     {${organization}}{}
+//     \\resumeItemListStart
+//       ${formattedBullets}
+//     \\resumeItemListEnd`;
+//         });
+      
+//       achievementsSection += `
+// \\resumeSubHeadingListEnd`;
+//     }
+
+//     // Generate extracurricular activities section
+//     let extracurricularSection = '';
+//     if (Array.isArray(formData.extracurricularActivities) && formData.extracurricularActivities.length > 0 && 
+//         formData.extracurricularActivities.some(activity => activity && activity.name)) {
+//       extracurricularSection = `
+// \\section{Extracurricular Activities}
+// \\resumeSubHeadingListStart`;
+
+//       formData.extracurricularActivities
+//         .filter(activity => activity && activity.name)
+//         .forEach(activity => {
+//           const name = escapeLatex(activity.name || '');
+//           const role = escapeLatex(activity.role || '');
+//           const organization = escapeLatex(activity.organization || '');
+//           const period = escapeLatex(activity.period || '');
+          
+//           // Handle description - ensure we have at least one item
+//         let bulletPoints = [];
+//         if (typeof activity.description === 'string' && activity.description.trim()) {
+//           // Try to split by explicit bullet points, new lines, or periods
+//           bulletPoints = activity.description
+//             .split(/•|\n|(?<=[.;])\s+/)
+//             .map(point => point.trim())
+//             .filter(point => point.length > 0);
+          
+//           // If we couldn't split it properly, just use it as a single bullet
+//           if (bulletPoints.length === 0) {
+//             bulletPoints = ["Participated actively and contributed to the organization\'s goals."];
+//           }
+//         } else if (Array.isArray(activity.description)) {
+//           bulletPoints = activity.description.filter(point => point && point.trim());
+//           // Ensure we have at least one bullet point
+//           if (bulletPoints.length === 0) {
+//             bulletPoints = ["Participated actively and contributed to the organization\'s goals."];
+//           }
+//         } else {
+//           // Default bullet point if no description
+//           bulletPoints = ["Participated actively and contributed to the organization\'s goals."];
+//         }
+        
+//         // Format bullet points - ensure we have content
+//         const formattedBullets = bulletPoints
+//           .map(bullet => {
+//             const escapedBullet = escapeLatex(bullet.trim());
+//             return `    \\resumeItem{${escapedBullet}}`;
+//           })
+//           .join('\n');
+//           extracurricularSection += `
+//   \\resumeSubheading
+//     {${name}}{${period}}
+//     {${role}}{${organization}}
+//     \\resumeItemListStart
+//       ${formattedBullets}
+//     \\resumeItemListEnd`;
+//         });
+      
+//       extracurricularSection += `
+// \\resumeSubHeadingListEnd`;
+//     }
+
+let certificationsSection = '';
     if (Array.isArray(formData.certifications) && formData.certifications.length > 0 && 
         formData.certifications.some(cert => cert && cert.name)) {
       certificationsSection = `
@@ -248,44 +427,40 @@ technicalSkills: technicalSkills.length > 0 ? technicalSkills.join(', ') : 'Git,
           const date = escapeLatex(cert.date || '');
           const link = cert.link ? `\\href{${escapeLatex(cert.link)}}{${certName}}` : certName;
 
-          // Handle description - ensure we have at least one item
-        let bulletPoints = [];
-        if (typeof cert.description === 'string' && cert.description.trim()) {
-          // Try to split by explicit bullet points, new lines, or periods
-          bulletPoints = cert.description
-            .split(/•|\n|(?<=[.;])\s+/)
-            .map(point => point.trim())
-            .filter(point => point.length > 0);
-          
-          // If we couldn't split it properly, just use it as a single bullet
-          if (bulletPoints.length === 0) {
-            bulletPoints = ["Completed certification requirements and demonstrated proficiency."];
+          // Handle description - don't add default bullet points
+          let bulletPoints = [];
+          if (typeof cert.description === 'string' && cert.description.trim()) {
+            // Try to split by explicit bullet points, new lines, or periods
+            bulletPoints = cert.description
+              .split(/•|\n|(?<=[.;])\s+/)
+              .map(point => point.trim())
+              .filter(point => point.length > 0);
+          } else if (Array.isArray(cert.description)) {
+            bulletPoints = cert.description.filter(point => point && point.trim());
           }
-        } else if (Array.isArray(cert.description)) {
-          bulletPoints = cert.description.filter(point => point && point.trim());
-          // Ensure we have at least one bullet point
-          if (bulletPoints.length === 0) {
-            bulletPoints = ["Completed certification requirements and demonstrated proficiency."];
-          }
-        } else {
-          // Default bullet point if no description
-          bulletPoints = ["Completed certification requirements and demonstrated proficiency."];
-        }
-        
-        // Format bullet points - ensure we have content
-        const formattedBullets = bulletPoints
-          .map(bullet => {
-            const escapedBullet = escapeLatex(bullet.trim());
-            return `    \\resumeItem{${escapedBullet}}`;
-          })
-          .join('\n');
           
-          certificationsSection += `
+          // Format bullet points content - only if we have actual content
+          let formattedBullets = '';
+          if (bulletPoints.length > 0) {
+            formattedBullets = bulletPoints
+              .map(bullet => {
+                const escapedBullet = escapeLatex(bullet.trim());
+                return `    \\resumeItem{${escapedBullet}}`;
+              })
+              .join('\n');
+            
+            certificationsSection += `
   \\resumeProjectHeading
     {\\textbf{${link}}}{${issuer} | ${date}}
     \\resumeItemListStart
 ${formattedBullets}
     \\resumeItemListEnd`;
+          } else {
+            // If no description, just show the heading without bullets
+            certificationsSection += `
+  \\resumeProjectHeading
+    {\\textbf{${link}}}{${issuer} | ${date}}`;
+          }
         });
       
       certificationsSection += `
@@ -307,45 +482,42 @@ ${formattedBullets}
           const year = escapeLatex(achievement.year || '');
           const organization = escapeLatex(achievement.organization || '');
 
-          // Handle description - ensure we have at least one item
-        let bulletPoints = [];
-        if (typeof achievement.description === 'string' && achievement.description.trim()) {
-          // Try to split by explicit bullet points, new lines, or periods
-          bulletPoints = achievement.description
-            .split(/•|\n|(?<=[.;])\s+/)
-            .map(point => point.trim())
-            .filter(point => point.length > 0);
-          
-          // If we couldn't split it properly, just use it as a single bullet
-          if (bulletPoints.length === 0) {
-            bulletPoints = ["Recognized for outstanding performance and contributions."];
+          // Handle description - don't add default bullet points
+          let bulletPoints = [];
+          if (typeof achievement.description === 'string' && achievement.description.trim()) {
+            // Try to split by explicit bullet points, new lines, or periods
+            bulletPoints = achievement.description
+              .split(/•|\n|(?<=[.;])\s+/)
+              .map(point => point.trim())
+              .filter(point => point.length > 0);
+          } else if (Array.isArray(achievement.description)) {
+            bulletPoints = achievement.description.filter(point => point && point.trim());
           }
-        } else if (Array.isArray(achievement.description)) {
-          bulletPoints = achievement.description.filter(point => point && point.trim());
-          // Ensure we have at least one bullet point
-          if (bulletPoints.length === 0) {
-            bulletPoints = ["Recognized for outstanding performance and contributions."];
-          }
-        } else {
-          // Default bullet point if no description
-          bulletPoints = ["Recognized for outstanding performance and contributions."];
-        }
-        
-        // Format bullet points - ensure we have content
-        const formattedBullets = bulletPoints
-          .map(bullet => {
-            const escapedBullet = escapeLatex(bullet.trim());
-            return `    \\resumeItem{${escapedBullet}}`;
-          })
-          .join('\n');
           
-          achievementsSection += `
+          // Format bullet points content - only if we have actual content
+          let formattedBullets = '';
+          if (bulletPoints.length > 0) {
+            formattedBullets = bulletPoints
+              .map(bullet => {
+                const escapedBullet = escapeLatex(bullet.trim());
+                return `    \\resumeItem{${escapedBullet}}`;
+              })
+              .join('\n');
+            
+            achievementsSection += `
   \\resumeProjectHeading
     {\\textbf{${title}}}{${year}}
     {${organization}}{}
     \\resumeItemListStart
       ${formattedBullets}
     \\resumeItemListEnd`;
+          } else {
+            // If no description, just show the heading without bullets
+            achievementsSection += `
+  \\resumeProjectHeading
+    {\\textbf{${title}}}{${year}}
+    {${organization}}{}`;
+          }
         });
       
       achievementsSection += `
@@ -368,44 +540,42 @@ ${formattedBullets}
           const organization = escapeLatex(activity.organization || '');
           const period = escapeLatex(activity.period || '');
           
-          // Handle description - ensure we have at least one item
-        let bulletPoints = [];
-        if (typeof activity.description === 'string' && activity.description.trim()) {
-          // Try to split by explicit bullet points, new lines, or periods
-          bulletPoints = activity.description
-            .split(/•|\n|(?<=[.;])\s+/)
-            .map(point => point.trim())
-            .filter(point => point.length > 0);
+          // Handle description - don't add default bullet points
+          let bulletPoints = [];
+          if (typeof activity.description === 'string' && activity.description.trim()) {
+            // Try to split by explicit bullet points, new lines, or periods
+            bulletPoints = activity.description
+              .split(/•|\n|(?<=[.;])\s+/)
+              .map(point => point.trim())
+              .filter(point => point.length > 0);
+          } else if (Array.isArray(activity.description)) {
+            bulletPoints = activity.description.filter(point => point && point.trim());
+          }
           
-          // If we couldn't split it properly, just use it as a single bullet
-          if (bulletPoints.length === 0) {
-            bulletPoints = ["Participated actively and contributed to the organization\'s goals."];
-          }
-        } else if (Array.isArray(activity.description)) {
-          bulletPoints = activity.description.filter(point => point && point.trim());
-          // Ensure we have at least one bullet point
-          if (bulletPoints.length === 0) {
-            bulletPoints = ["Participated actively and contributed to the organization\'s goals."];
-          }
-        } else {
-          // Default bullet point if no description
-          bulletPoints = ["Participated actively and contributed to the organization\'s goals."];
-        }
-        
-        // Format bullet points - ensure we have content
-        const formattedBullets = bulletPoints
-          .map(bullet => {
-            const escapedBullet = escapeLatex(bullet.trim());
-            return `    \\resumeItem{${escapedBullet}}`;
-          })
-          .join('\n');
-          extracurricularSection += `
+          // Format bullet points content - only if we have actual content
+          let formattedBullets = '';
+          if (bulletPoints.length > 0) {
+            formattedBullets = bulletPoints
+              .map(bullet => {
+                const escapedBullet = escapeLatex(bullet.trim());
+                return `    \\resumeItem{${escapedBullet}}`;
+              })
+              .join('\n');
+            
+            extracurricularSection += `
   \\resumeSubheading
     {${name}}{${period}}
     {${role}}{${organization}}
     \\resumeItemListStart
       ${formattedBullets}
     \\resumeItemListEnd`;
+          } else {
+            // If no description, just show the heading without bullets
+            extracurricularSection += `
+  \\resumeSubheading
+    {${name}}{${period}}
+    {${role}}{${organization}}`;
+          }
         });
       
       extracurricularSection += `
