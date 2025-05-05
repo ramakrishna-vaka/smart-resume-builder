@@ -65,7 +65,7 @@ const HeroPage = () => {
         </div>
       </div>
       
-      <div className="container py-5 pb-3">
+      <div className="container py-5 pb-5">
         <h2 className="text-center mb-5">How It Works</h2>
         <div className="row g-4">
           <div className="col-md-4">
