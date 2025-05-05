@@ -100,8 +100,21 @@ const ResumeBuilder = () => {
   const handleFormDataChange = (updatedData, source = 'user') => {
     setFormData(updatedData);
     
+    if (source === 'initialLoad') {
+      // For initial load - mark all fields as dirty
+      const allFieldsDirty = {};
+      Object.keys(updatedData).forEach(key => {
+        allFieldsDirty[key] = true;
+      });
+      
+      setIsDirty(allFieldsDirty);
+      
+      // Clear any status messages
+      setSuccessMessage('');
+      setErrorMessage('');
+    }
     // Only mark as dirty if changes come from user
-    if (source === 'user') {
+    else if (source === 'user') {
       // Create a diff of what fields changed
       const changedFields = {};
       Object.keys(updatedData).forEach(key => {
@@ -260,10 +273,8 @@ const ResumeBuilder = () => {
             : []
         };
         
-        // Set form data with server source to avoid marking all fields as dirty
-        setFormData(formattedData);
-        // Reset dirty state since we're loading from saved data
-        setIsDirty({});
+        // Set form data with 'initialLoad' source to mark all fields as dirty
+        handleFormDataChange(formattedData, 'initialLoad');
         setSuccessMessage('Previous resume data loaded successfully!');
       } else {
         setErrorMessage(responseData.message || 'No previous resume data found.');

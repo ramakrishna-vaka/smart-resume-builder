@@ -11,8 +11,8 @@ const HeroPage = () => {
   return (
     <div className="hero-container">
       <div className="hero-content container">
-        <div className="row align-items-center min-vh-100">
-          <div className="col-lg-6">
+        <div className="row align-items-start pt-5 pb-5">
+          <div className="col-lg-5">
             <h1 className="display-3 fw-bold mb-4">Build Smart Resumes That Get You Hired</h1>
             <p className="lead mb-4">
               Our AI-powered resume builder tailors your resume to match job descriptions, 
@@ -51,17 +51,21 @@ const HeroPage = () => {
               </div>
             </div>
           </div>
-          <div className="col-lg-6">
-            <img 
-              src={resumeBuilderHero} 
-              alt="Resume Builder" 
-              className="img-fluid" 
-            />
+          <div className="col-lg-7">
+            <div className="ratio ratio-16x9">
+  <iframe 
+    src="https://www.youtube.com/embed/SNgzvq2DwpU?si=OXcGhysbRAGCI2TQ" 
+    title="Resume Builder Demo" 
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+    allowFullScreen 
+  ></iframe>
+</div>
+
           </div>
         </div>
       </div>
       
-      <div className="container py-5">
+      <div className="container py-5 pb-3">
         <h2 className="text-center mb-5">How It Works</h2>
         <div className="row g-4">
           <div className="col-md-4">

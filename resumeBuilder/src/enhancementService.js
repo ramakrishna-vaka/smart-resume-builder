@@ -148,7 +148,7 @@ ${introduction}
 Based on this job description, enhance the candidate's introduction:
 1. Maintain the core personal details and tone from the original introduction
 2. Highlight skills and experiences that align with the job description
-3. Keep approximately the same length as the original (1-2 paragraphs)
+3. Keep approximately the same length as the original (2-3 sentences)
 4. Use professional language but maintain the candidate's original voice
 5. Ensure the enhanced introduction sounds natural and authentic
 6. Return ONLY the enhanced introduction text with no additional commentary
@@ -172,25 +172,40 @@ Important: Do NOT invent new experiences or qualifications not mentioned in the 
     
     try {
       const prompt = `
-Job Description:
-${jobDescription}
-
-Candidate's Current Professional Title:
-${title}
-
-Based on this job description, enhance the professional title:
-1. Maintain core elements from the original title
-2. Align it better with the job being applied for IF appropriate
-3. Keep it concise and professional (maximum 3-5 words)
-4. Return ONLY the enhanced title with no additional commentary
-
-Important: The enhanced title must remain realistic and closely related to the original. Do not create an entirely different title.
-`;
-
+  Job Description:
+  ${jobDescription}
+  
+  Candidate's Current Professional Title:
+  ${title}
+  
+  Based on this job description, generate 2-3 enhanced professional title variations:
+  1. Maintain core elements from the original title
+  2. Align titles with the job being applied for
+  3. Keep each title concise and professional (maximum 3-5 words)
+  4. For titles that include company affiliations (e.g., "Intern@XYZ", "Developer at ABC"), maintain this format in appropriate variations
+  5. Return ONLY the enhanced title options separated by commas, with no additional commentary
+  
+  Important: All enhanced titles must remain realistic and closely related to the original. Do not create entirely different titles. Include variations that:
+  - Highlight different aspects of the same role
+  - Adjust seniority level appropriately if relevant
+  - Use industry-standard terminology from the job description
+  `;
+  
       const aiResponse = await callAI(prompt);
-      return aiResponse || title;
+      
+      // If no response, return original title
+      if (!aiResponse) return title;
+      
+      // If the response doesn't contain commas, it might be a single title
+      // In that case, combine it with the original title
+      if (!aiResponse.includes(',')) {
+        return `${title}, ${aiResponse.trim()}`;
+      }
+      
+      // Otherwise return the comma-separated titles
+      return aiResponse.trim();
     } catch (error) {
-      console.error('Error enhancing title:', error);
+      console.error('Error enhancing titles:', error);
       return title; // Return original on error
     }
   },

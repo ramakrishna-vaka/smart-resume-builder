@@ -101,8 +101,24 @@ const SkillsForm = ({ skills, handleSkillsChange }) => {
     {value: 'web development', label: 'Web Development'},
     {value:'penetration testing', label: 'Penetration Testing'},
     {value: 'cyber security', label: 'Cyber Security'},
-
   ];
+
+  // Custom styles to ensure the dropdown is properly sized and visible
+  const customStyles = {
+    control: (provided) => ({
+      ...provided,
+      minHeight: '38px',
+      width: '100%',
+    }),
+    menu: (provided) => ({
+      ...provided,
+      zIndex: 9999,
+    }),
+    multiValue: (provided) => ({
+      ...provided,
+      backgroundColor: '#e9ecef',
+    }),
+  };
 
   return (
     <div>
@@ -115,7 +131,14 @@ const SkillsForm = ({ skills, handleSkillsChange }) => {
         onChange={handleSkillsChange}
         placeholder="Search and select your technical skills..."
         classNamePrefix="select"
+        styles={customStyles}
+        closeMenuOnSelect={false}
+        isClearable={true}
+        isSearchable={true}
       />
+      <small className="text-muted">
+        Click multiple items to select them, or use the search to find specific skills.
+      </small>
     </div>
   );
 };
